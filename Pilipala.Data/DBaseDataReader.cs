@@ -2,11 +2,29 @@
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.IO;
+using System.Linq;
+
+using Pilipala.Data.Resources;
 
 namespace Pilipala.Data
 {
     public class DBaseDataReader : DbDataReader
     {
+        private readonly Stream _data;
+
+        private readonly uint _recordCount;
+
+        private bool _isClosed;
+
+        private DBaseDataReader(Stream data)
+        {
+            _data = data;
+            Version = GetVersion(_data);
+            LastUpdated = GetLastUpdateDateTime(data);
+            _recordCount = GetRecordCount(data);
+        }
+
         public override int Depth
         {
             get
@@ -27,7 +45,7 @@ namespace Pilipala.Data
         {
             get
             {
-                throw new NotImplementedException();
+                return _recordCount > 0;
             }
         }
 
@@ -35,7 +53,7 @@ namespace Pilipala.Data
         {
             get
             {
-                throw new NotImplementedException();
+                return _isClosed;
             }
         }
 
@@ -46,6 +64,10 @@ namespace Pilipala.Data
                 throw new NotImplementedException();
             }
         }
+
+        public DateTime LastUpdated { get; private set; }
+
+        public int Version { get; private set; }
 
         public override object this[int ordinal]
         {
@@ -63,9 +85,15 @@ namespace Pilipala.Data
             }
         }
 
+        public static DBaseDataReader Create(Stream data)
+        {
+            return new DBaseDataReader(data);
+        }
+
         public override void Close()
         {
-            throw new NotImplementedException();
+            _data.Close();
+            _isClosed = true;
         }
 
         public override bool GetBoolean(int ordinal)
@@ -191,6 +219,54 @@ namespace Pilipala.Data
         public override bool Read()
         {
             throw new NotImplementedException();
+        }
+
+        private static DateTime GetLastUpdateDateTime(Stream data)
+        {
+            var year = 1900 + data.ReadByte();
+            var month = data.ReadByte();
+            var day = data.ReadByte();
+
+            if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
+
+            return new DateTime(year, month, day);
+        }
+
+        private static uint GetRecordCount(Stream data)
+        {
+            var bytes = new byte[4];
+            if (data.Read(bytes, 0, 4) < 4)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
+
+            return BitConverter.ToUInt32(
+                BitConverter.IsLittleEndian
+                    ? bytes
+                    : bytes.Reverse().ToArray(), 
+                0);
+        }
+
+        private static int GetVersion(Stream data)
+        {
+            var type = data.ReadByte();
+            var version = type & 7;
+            if (type < 0)
+            {
+                version = 0;
+            }
+
+            switch (version)
+            {
+                case 3:
+                case 4:
+                    return version;
+                default:
+                    throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
         }
     }
 }
