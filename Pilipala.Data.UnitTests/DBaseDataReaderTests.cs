@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Data.Common;
+
+using NUnit.Framework;
 
 namespace Pilipala.Data.UnitTests
 {
@@ -6,8 +9,11 @@ namespace Pilipala.Data.UnitTests
     public class DBaseDataReaderTests
     {
         [Test]
-        public void CanCreateDBaseDataReader()
+        public void DBaseDataReaderDerivesFromTheCorrectType()
         {
+            var reader = typeof(DBaseDataReader);
+            Assert.That(reader.BaseType, Is.EqualTo(typeof(DbDataReader)));
+            Assert.That(reader.GetInterfaces(), Has.Member(typeof(IDisposable)));
         }
     }
 }
