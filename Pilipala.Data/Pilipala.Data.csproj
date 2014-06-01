@@ -40,8 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBase\DBaseDataReader.cs" />
+    <Compile Include="DBase\Field.cs" />
     <Compile Include="DBase\HeaderParser.cs" />
     <Compile Include="DBase\IHeaderParser.cs" />
+    <Compile Include="Extensions\LinqExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
