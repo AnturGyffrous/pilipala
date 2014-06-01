@@ -3,26 +3,29 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
 
 using Pilipala.Data.Resources;
 
-namespace Pilipala.Data
+namespace Pilipala.Data.DBase
 {
     public class DBaseDataReader : DbDataReader
     {
-        private readonly Stream _data;
+        private readonly int _recordCount;
 
-        private readonly uint _recordCount;
+        private readonly Stream _stream;
 
         private bool _isClosed;
 
-        private DBaseDataReader(Stream data)
+        private DBaseDataReader(Stream stream)
         {
-            _data = data;
-            Version = GetVersion(_data);
-            LastUpdated = GetLastUpdateDateTime(data);
-            _recordCount = GetRecordCount(data);
+            _stream = stream;
+            if (_stream.ReadByte() != 3)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
+
+            IHeaderParser headerParser = new DBaseHeaderParser(_stream);
+            _recordCount = headerParser.RecordCount;
         }
 
         public override int Depth
@@ -65,10 +68,6 @@ namespace Pilipala.Data
             }
         }
 
-        public DateTime LastUpdated { get; private set; }
-
-        public int Version { get; private set; }
-
         public override object this[int ordinal]
         {
             get
@@ -85,14 +84,14 @@ namespace Pilipala.Data
             }
         }
 
-        public static DBaseDataReader Create(Stream data)
+        public static DBaseDataReader Create(Stream stream)
         {
-            return new DBaseDataReader(data);
+            return new DBaseDataReader(stream);
         }
 
         public override void Close()
         {
-            _data.Close();
+            _stream.Close();
             _isClosed = true;
         }
 
@@ -219,54 +218,6 @@ namespace Pilipala.Data
         public override bool Read()
         {
             throw new NotImplementedException();
-        }
-
-        private static DateTime GetLastUpdateDateTime(Stream data)
-        {
-            var year = 1900 + data.ReadByte();
-            var month = data.ReadByte();
-            var day = data.ReadByte();
-
-            if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31)
-            {
-                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
-            }
-
-            return new DateTime(year, month, day);
-        }
-
-        private static uint GetRecordCount(Stream data)
-        {
-            var bytes = new byte[4];
-            if (data.Read(bytes, 0, 4) < 4)
-            {
-                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
-            }
-
-            return BitConverter.ToUInt32(
-                BitConverter.IsLittleEndian
-                    ? bytes
-                    : bytes.Reverse().ToArray(), 
-                0);
-        }
-
-        private static int GetVersion(Stream data)
-        {
-            var type = data.ReadByte();
-            var version = type & 7;
-            if (type < 0)
-            {
-                version = 0;
-            }
-
-            switch (version)
-            {
-                case 3:
-                case 4:
-                    return version;
-                default:
-                    throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
-            }
         }
     }
 }

@@ -61,7 +61,7 @@ namespace Pilipala.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unknown or invalid dBase data..
+        ///   Looks up a localized string similar to Unknown, unsupported or invalid dBase data..
         /// </summary>
         internal static string DBaseDataReader_InvalidFormat {
             get {
