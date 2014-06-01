@@ -5,9 +5,9 @@ using Pilipala.Data.Resources;
 
 namespace Pilipala.Data.DBase
 {
-    internal class DBaseHeaderParser : IHeaderParser
+    internal class HeaderParser : IHeaderParser
     {
-        public DBaseHeaderParser(Stream stream)
+        public HeaderParser(Stream stream)
         {
             var data = new byte[31];
             if (stream.Read(data, 0, 31) != 31)
@@ -26,6 +26,8 @@ namespace Pilipala.Data.DBase
         }
 
         public bool Encrypted { get; private set; }
+
+        public int FieldCount { get; private set; }
 
         public bool IncompleteTransaction { get; private set; }
 

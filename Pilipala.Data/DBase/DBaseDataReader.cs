@@ -24,7 +24,7 @@ namespace Pilipala.Data.DBase
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            IHeaderParser headerParser = new DBaseHeaderParser(_stream);
+            IHeaderParser headerParser = new HeaderParser(_stream);
             _recordCount = headerParser.RecordCount;
         }
 
@@ -32,7 +32,7 @@ namespace Pilipala.Data.DBase
         {
             get
             {
-                throw new NotImplementedException();
+                return 0;
             }
         }
 

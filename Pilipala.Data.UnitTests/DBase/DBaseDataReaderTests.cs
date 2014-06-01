@@ -21,6 +21,7 @@ namespace Pilipala.Data.UnitTests.DBase
                 {
                     Assert.That(reader.IsClosed, Is.False);
                     Assert.That(reader.HasRows, Is.True);
+                    Assert.That(reader.Depth, Is.EqualTo(0));
                 }
             }
         }

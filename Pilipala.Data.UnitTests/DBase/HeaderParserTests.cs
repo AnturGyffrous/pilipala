@@ -10,7 +10,7 @@ using Pilipala.Data.Resources;
 namespace Pilipala.Data.UnitTests.DBase
 {
     [TestFixture]
-    public class DBaseHeaderParserTests
+    public class HeaderParserTests
     {
         private byte[] GetHeaderBytes()
         {
@@ -37,7 +37,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             using (var stream = new MemoryStream(GetHeaderBytes()))
             {
-                var header = new DBaseHeaderParser(stream);
+                var header = new HeaderParser(stream);
                 Assert.That(header.LastUpdated, Is.EqualTo(new DateTime(2015, 10, 21)));
                 Assert.That(header.RecordCount, Is.EqualTo(301));
                 Assert.That(header.RecordLength, Is.EqualTo(611));
@@ -61,7 +61,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[2] = day;
             using (var stream = new MemoryStream(headerBytes))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new DBaseHeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -74,7 +74,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[2] = 30; // 30th February!
             using (var stream = new MemoryStream(headerBytes))
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() => new DBaseHeaderParser(stream));
+                Assert.Throws<ArgumentOutOfRangeException>(() => new HeaderParser(stream));
             }
         }
 
@@ -83,7 +83,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new DBaseHeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
