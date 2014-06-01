@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using Pilipala.Data.DBase;
+using Pilipala.Data.Resources;
 
 namespace Pilipala.Data.UnitTests.DBase
 {
@@ -47,16 +48,6 @@ namespace Pilipala.Data.UnitTests.DBase
             }
         }
 
-        [Test]
-        public void WillGetAnExceptionIfThereIsNotEnoughHeaderData()
-        {
-            using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
-            {
-                var exception = Assert.Throws<InvalidOperationException>(() => new DBaseHeaderParser(stream));
-                Assert.That(exception.Message, Is.EqualTo(Resources.ErrorMessages.DBaseDataReader_InvalidFormat));
-            }
-        }
-
         [TestCase(115, 10, 21)]
         [TestCase(15, 0, 21)]
         [TestCase(15, 13, 21)]
@@ -71,7 +62,7 @@ namespace Pilipala.Data.UnitTests.DBase
             using (var stream = new MemoryStream(headerBytes))
             {
                 var exception = Assert.Throws<InvalidOperationException>(() => new DBaseHeaderParser(stream));
-                Assert.That(exception.Message, Is.EqualTo(Resources.ErrorMessages.DBaseDataReader_InvalidFormat));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
 
@@ -84,6 +75,16 @@ namespace Pilipala.Data.UnitTests.DBase
             using (var stream = new MemoryStream(headerBytes))
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => new DBaseHeaderParser(stream));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfThereIsNotEnoughHeaderData()
+        {
+            using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new DBaseHeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
     }

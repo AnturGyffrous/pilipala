@@ -9,7 +9,7 @@ namespace Pilipala.Data.DBase
     {
         public DBaseHeaderParser(Stream stream)
         {
-            var data = new Byte[31];
+            var data = new byte[31];
             if (stream.Read(data, 0, 31) != 31)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
@@ -25,19 +25,19 @@ namespace Pilipala.Data.DBase
             LanguageDriverID = data[29];
         }
 
-        public int RecordCount { get; private set; }
-
-        public int RecordLength { get; private set; }
-
-        public DateTime LastUpdated { get; private set; }
+        public bool Encrypted { get; private set; }
 
         public bool IncompleteTransaction { get; private set; }
 
-        public bool Encrypted { get; private set; }
+        public int LanguageDriverID { get; private set; }
+
+        public DateTime LastUpdated { get; private set; }
 
         public bool ProductionMdx { get; private set; }
 
-        public int LanguageDriverID { get; private set; }
+        public int RecordCount { get; private set; }
+
+        public int RecordLength { get; private set; }
 
         private void SetLastUpdatedDate(byte year, byte month, byte day)
         {
@@ -47,8 +47,8 @@ namespace Pilipala.Data.DBase
             }
 
             var century = year < 79
-                             ? 2000
-                             : 1900;
+                              ? 2000
+                              : 1900;
 
             LastUpdated = new DateTime(century + year, month, day);
         }
