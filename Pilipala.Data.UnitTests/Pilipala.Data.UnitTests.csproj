@@ -61,6 +61,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ResourceTests\ErrorMessagesResourceTests.cs" />
+    <Compile Include="ResourceTests\UnitTestsResourceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
