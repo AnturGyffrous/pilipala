@@ -4,7 +4,6 @@ using System.Text;
 
 using NUnit.Framework;
 
-using Pilipala.Data.DBase;
 using Pilipala.Data.DBase.Fields;
 
 namespace Pilipala.Data.UnitTests.DBase
