@@ -5,7 +5,8 @@
         public CharacterField(byte[] buffer)
             : base(buffer)
         {
-            Type = "Character";
+            Type = typeof(string);
+            TypeName = "Character";
         }
     }
 }

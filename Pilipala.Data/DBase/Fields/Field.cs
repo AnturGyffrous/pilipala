@@ -31,7 +31,9 @@ namespace Pilipala.Data.DBase.Fields
 
         public bool ProductionMdx { get; private set; }
 
-        public string Type { get; protected set; }
+        public Type Type { get; protected set; }
+
+        public string TypeName { get; protected set; }
 
         public int WorkAreaID { get; private set; }
 

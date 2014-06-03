@@ -14,7 +14,8 @@ namespace Pilipala.Data.DBase.Fields
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            Type = "Float";
+            Type = typeof(double);
+            TypeName = "Float";
         }
     }
 }

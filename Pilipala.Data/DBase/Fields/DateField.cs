@@ -14,7 +14,8 @@ namespace Pilipala.Data.DBase.Fields
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            Type = "Date";
+            Type = typeof(DateTime);
+            TypeName = "Date";
         }
     }
 }

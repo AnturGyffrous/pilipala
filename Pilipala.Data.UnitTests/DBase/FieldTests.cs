@@ -52,7 +52,8 @@ namespace Pilipala.Data.UnitTests.DBase
             var field = Field.Parse(data);
 
             Assert.That(field.Name, Is.EqualTo("Char Field"));
-            Assert.That(field.Type, Is.EqualTo("Character"));
+            Assert.That(field.Type, Is.EqualTo(typeof(string)));
+            Assert.That(field.TypeName, Is.EqualTo("Character"));
             Assert.That(field.Length, Is.EqualTo(50));
             Assert.That(field.DecimalCount, Is.EqualTo(3));
             Assert.That(field.WorkAreaID, Is.EqualTo(1));
@@ -66,7 +67,8 @@ namespace Pilipala.Data.UnitTests.DBase
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Date Field"));
-            Assert.That(field.Type, Is.EqualTo("Date"));
+            Assert.That(field.Type, Is.EqualTo(typeof(DateTime)));
+            Assert.That(field.TypeName, Is.EqualTo("Date"));
             Assert.That(field.Length, Is.EqualTo(8));
             Assert.That(field.DecimalCount, Is.EqualTo(0));
         }
@@ -78,7 +80,8 @@ namespace Pilipala.Data.UnitTests.DBase
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Float Fld"));
-            Assert.That(field.Type, Is.EqualTo("Float"));
+            Assert.That(field.Type, Is.EqualTo(typeof(double)));
+            Assert.That(field.TypeName, Is.EqualTo("Float"));
             Assert.That(field.Length, Is.EqualTo(20));
             Assert.That(field.DecimalCount, Is.EqualTo(8));
         }
@@ -90,7 +93,8 @@ namespace Pilipala.Data.UnitTests.DBase
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Bool Field"));
-            Assert.That(field.Type, Is.EqualTo("Logical"));
+            Assert.That(field.Type, Is.EqualTo(typeof(bool)));
+            Assert.That(field.TypeName, Is.EqualTo("Logical"));
             Assert.That(field.Length, Is.EqualTo(1));
             Assert.That(field.DecimalCount, Is.EqualTo(0));
         }
@@ -102,7 +106,8 @@ namespace Pilipala.Data.UnitTests.DBase
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Num Field"));
-            Assert.That(field.Type, Is.EqualTo("Numeric"));
+            Assert.That(field.Type, Is.EqualTo(typeof(double)));
+            Assert.That(field.TypeName, Is.EqualTo("Numeric"));
             Assert.That(field.Length, Is.EqualTo(10));
             Assert.That(field.DecimalCount, Is.EqualTo(2));
         }
@@ -122,16 +127,16 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
-        public void WillGetAnExceptionIfFloatFieldIsLongerThanTwenty()
+        public void WillGetAnExceptionIfDecimalCountIsGreaterThanFieldLength()
         {
-            var data = GetFieldData("Float Fld", 'F', 21, 4);
+            var data = GetFieldData("Float Fld", 'F', 10, 15);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]
-        public void WillGetAnExceptionIfDecimalCountIsGreaterThanFieldLength()
+        public void WillGetAnExceptionIfFloatFieldIsLongerThanTwenty()
         {
-            var data = GetFieldData("Float Fld", 'F', 10, 15);
+            var data = GetFieldData("Float Fld", 'F', 21, 4);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
@@ -173,7 +178,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfTheFieldIsAnUnknownType()
         {
-            var data = GetFieldData("Unknown Type", 'U', 10);
+            var data = GetFieldData("Unknown TypeName", 'U', 10);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
     }
