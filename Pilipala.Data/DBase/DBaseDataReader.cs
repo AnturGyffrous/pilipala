@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 
 using Pilipala.Data.Resources;
 
@@ -39,7 +40,7 @@ namespace Pilipala.Data.DBase
         {
             get
             {
-                throw new NotImplementedException();
+                return _metaData.Fields.Count();
             }
         }
 

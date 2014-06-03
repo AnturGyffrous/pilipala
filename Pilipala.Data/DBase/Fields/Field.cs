@@ -6,7 +6,7 @@ using Pilipala.Data.Resources;
 
 namespace Pilipala.Data.DBase.Fields
 {
-    internal abstract class Field
+    internal abstract class Field : IField
     {
         protected Field(byte[] buffer)
         {

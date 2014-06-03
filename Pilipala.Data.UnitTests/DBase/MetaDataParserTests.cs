@@ -12,7 +12,7 @@ namespace Pilipala.Data.UnitTests.DBase
     [TestFixture]
     public class MetaDataParserTests
     {
-        private static byte[] GetHeaderBytes()
+        private static byte[] GetBytes()
         {
             return new byte[]
                    {
@@ -30,15 +30,15 @@ namespace Pilipala.Data.UnitTests.DBase
                        3, // Language driver ID
                        0 // Reserved
                    }
-                   .Concat(FieldTests.GetFieldData("FIRST FIELD", 'C', 255))
-                   .Concat(new byte[] { 13 })
-                   .ToArray();
+                .Concat(FieldTests.GetFieldData("FIRST FIELD", 'C', 255))
+                .Concat(new byte[] { 13 })
+                .ToArray();
         }
 
         [Test]
         public void CanParseHeader()
         {
-            using (var stream = new MemoryStream(GetHeaderBytes()))
+            using (var stream = new MemoryStream(GetBytes()))
             {
                 var header = MetaData.Parse(stream);
                 Assert.That(header.LastUpdated, Is.EqualTo(new DateTime(2015, 10, 21)));
@@ -48,8 +48,17 @@ namespace Pilipala.Data.UnitTests.DBase
                 Assert.That(header.Encrypted, Is.True);
                 Assert.That(header.ProductionMdx, Is.True);
                 Assert.That(header.LanguageDriverID, Is.EqualTo(3));
-
                 Assert.That(header.Fields.Count(), Is.EqualTo(1));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfFieldIsAccessedBeforeReadingFirstRecord()
+        {
+            using (var stream = new MemoryStream(GetBytes()))
+            {
+                var data = MetaData.Parse(stream);
+                //Assert.Throws<Exception>(() => data.Fields[0].Value);
             }
         }
 
@@ -60,7 +69,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [TestCase(15, 10, 32)]
         public void WillGetAnExceptionIfLastModifiedIsInvalid(byte year, byte month, byte day)
         {
-            var headerBytes = GetHeaderBytes();
+            var headerBytes = GetBytes();
             headerBytes[0] = year;
             headerBytes[1] = month;
             headerBytes[2] = day;
@@ -74,7 +83,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfLastModifiedIsNotAValidDate()
         {
-            var headerBytes = GetHeaderBytes();
+            var headerBytes = GetBytes();
             headerBytes[1] = 2;
             headerBytes[2] = 30; // 30th February!
             using (var stream = new MemoryStream(headerBytes))
@@ -84,9 +93,20 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
+        public void WillGetAnExceptionIfTheHeaderDoesNotEndWithAFieldTerminator()
+        {
+            var headerBytes = GetBytes();
+            using (var stream = new MemoryStream(headerBytes.Take(headerBytes.Length - 1).ToArray()))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
         public void WillGetAnExceptionIfTheHeaderLengthIsLessThanOne()
         {
-            var headerBytes = GetHeaderBytes();
+            var headerBytes = GetBytes();
             headerBytes[9] = 0;
             headerBytes[10] = 0;
             using (var stream = new MemoryStream(headerBytes))
@@ -97,23 +117,9 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
-        public void WillGetAnExceptionIfTheRemainderOfTheHeaderLengthDividedByThirtyTwoIsNotOne()
-        {
-            var headerBytes = GetHeaderBytes();
-            var headerLength = BitConverter.GetBytes((short)96);
-            headerBytes[7] = headerLength[0];
-            headerBytes[8] = headerLength[1];
-            using (var stream = new MemoryStream(headerBytes))
-            {
-                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
-                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
-            }
-        }
-
-        [Test]
         public void WillGetAnExceptionIfTheRecordCountIsLessThanZero()
         {
-            var headerBytes = GetHeaderBytes();
+            var headerBytes = GetBytes();
             var recordCount = BitConverter.GetBytes(-3);
             headerBytes[3] = recordCount[0];
             headerBytes[4] = recordCount[1];
@@ -127,9 +133,23 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
+        public void WillGetAnExceptionIfTheRemainderOfTheHeaderLengthDividedByThirtyTwoIsNotOne()
+        {
+            var headerBytes = GetBytes();
+            var headerLength = BitConverter.GetBytes((short)96);
+            headerBytes[7] = headerLength[0];
+            headerBytes[8] = headerLength[1];
+            using (var stream = new MemoryStream(headerBytes))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
         public void WillGetAnExceptionIfThereIsNotEnoughHeaderData()
         {
-            using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
+            using (var stream = new MemoryStream(GetBytes().Take(25).ToArray()))
             {
                 var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
@@ -139,18 +159,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfThereIsNotFieldDefinitionData()
         {
-            using (var stream = new MemoryStream(GetHeaderBytes().Take(50).ToArray()))
-            {
-                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
-                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
-            }
-        }
-
-        [Test]
-        public void WillGetAnExceptionIfTheHeaderDoesNotEndWithAFieldTerminator()
-        {
-            var headerBytes = GetHeaderBytes();
-            using (var stream = new MemoryStream(headerBytes.Take(headerBytes.Length - 1).ToArray()))
+            using (var stream = new MemoryStream(GetBytes().Take(50).ToArray()))
             {
                 var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));

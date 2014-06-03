@@ -32,7 +32,7 @@ namespace Pilipala.Data.DBase
             }
 
             var fieldCount = (headerLength - 33) / 32;
-            var fields = new List<Field>(fieldCount);
+            var fields = new List<IField>(fieldCount);
 
             for (var i = 0; i < fieldCount; i++)
             {
@@ -50,12 +50,12 @@ namespace Pilipala.Data.DBase
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            Fields = fields;
+            Fields = fields.ToArray();
         }
 
         public bool Encrypted { get; private set; }
 
-        public IEnumerable<Field> Fields { get; private set; }
+        public IField[] Fields { get; private set; }
 
         public bool IncompleteTransaction { get; private set; }
 
