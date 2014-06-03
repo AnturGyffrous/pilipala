@@ -10,7 +10,7 @@ namespace Pilipala.Data.DBase
 {
     public class DBaseDataReader : DbDataReader
     {
-        private readonly int _recordCount;
+        private readonly IMetaData _metaData;
 
         private readonly Stream _stream;
 
@@ -24,8 +24,7 @@ namespace Pilipala.Data.DBase
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            IHeaderParser headerParser = new HeaderParser(_stream);
-            _recordCount = headerParser.RecordCount;
+            _metaData = MetaData.Parse(_stream);
         }
 
         public override int Depth
@@ -48,7 +47,7 @@ namespace Pilipala.Data.DBase
         {
             get
             {
-                return _recordCount > 0;
+                return _metaData.RecordsAffected > 0;
             }
         }
 
@@ -64,7 +63,7 @@ namespace Pilipala.Data.DBase
         {
             get
             {
-                throw new NotImplementedException();
+                return _metaData.RecordsAffected;
             }
         }
 

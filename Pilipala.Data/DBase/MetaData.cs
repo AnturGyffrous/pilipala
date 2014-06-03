@@ -7,9 +7,9 @@ using Pilipala.Data.Resources;
 
 namespace Pilipala.Data.DBase
 {
-    internal class HeaderParser : IHeaderParser
+    internal class MetaData : IMetaData
     {
-        public HeaderParser(Stream stream)
+        private MetaData(Stream stream)
         {
             var data = new byte[31];
             if (stream.Read(data, 0, 31) != 31)
@@ -18,7 +18,7 @@ namespace Pilipala.Data.DBase
             }
 
             SetLastUpdatedDate(data[0], data[1], data[2]);
-            RecordCount = BitConverter.ToInt32(data, 3);
+            RecordsAffected = BitConverter.ToInt32(data, 3);
             var headerLength = BitConverter.ToInt16(data, 7);
             RecordLength = BitConverter.ToInt16(data, 9);
             IncompleteTransaction = data[13] != 0;
@@ -26,7 +26,7 @@ namespace Pilipala.Data.DBase
             ProductionMdx = data[28] != 0;
             LanguageDriverID = data[29];
 
-            if (RecordCount < 0 || headerLength % 32 != 1 || RecordLength < 1)
+            if (RecordsAffected < 0 || headerLength % 32 != 1 || RecordLength < 1)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
@@ -65,9 +65,14 @@ namespace Pilipala.Data.DBase
 
         public bool ProductionMdx { get; private set; }
 
-        public int RecordCount { get; private set; }
-
         public int RecordLength { get; private set; }
+
+        public int RecordsAffected { get; private set; }
+
+        public static MetaData Parse(Stream stream)
+        {
+            return new MetaData(stream);
+        }
 
         private void SetLastUpdatedDate(byte year, byte month, byte day)
         {

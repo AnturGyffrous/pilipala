@@ -10,7 +10,7 @@ using Pilipala.Data.Resources;
 namespace Pilipala.Data.UnitTests.DBase
 {
     [TestFixture]
-    public class HeaderParserTests
+    public class MetaDataParserTests
     {
         private static byte[] GetHeaderBytes()
         {
@@ -20,7 +20,7 @@ namespace Pilipala.Data.UnitTests.DBase
                        10, // Month last updated
                        21, // Day last updated
                        45, 1, 0, 0, // Record count
-                       65, 0, // Header byte count
+                       65, 0, // MetaData byte count
                        255, 0, // Record byte count
                        0, 0, // Reserved
                        1, // Incomplete transaction flag
@@ -40,9 +40,9 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             using (var stream = new MemoryStream(GetHeaderBytes()))
             {
-                var header = new HeaderParser(stream);
+                var header = MetaData.Parse(stream);
                 Assert.That(header.LastUpdated, Is.EqualTo(new DateTime(2015, 10, 21)));
-                Assert.That(header.RecordCount, Is.EqualTo(301));
+                Assert.That(header.RecordsAffected, Is.EqualTo(301));
                 Assert.That(header.RecordLength, Is.EqualTo(255));
                 Assert.That(header.IncompleteTransaction, Is.True);
                 Assert.That(header.Encrypted, Is.True);
@@ -66,7 +66,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[2] = day;
             using (var stream = new MemoryStream(headerBytes))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -79,7 +79,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[2] = 30; // 30th February!
             using (var stream = new MemoryStream(headerBytes))
             {
-                Assert.Throws<ArgumentOutOfRangeException>(() => new HeaderParser(stream));
+                Assert.Throws<ArgumentOutOfRangeException>(() => MetaData.Parse(stream));
             }
         }
 
@@ -91,7 +91,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[10] = 0;
             using (var stream = new MemoryStream(headerBytes))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -105,7 +105,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[8] = headerLength[1];
             using (var stream = new MemoryStream(headerBytes))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -121,7 +121,7 @@ namespace Pilipala.Data.UnitTests.DBase
             headerBytes[6] = recordCount[3];
             using (var stream = new MemoryStream(headerBytes))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -131,7 +131,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -141,7 +141,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             using (var stream = new MemoryStream(GetHeaderBytes().Take(50).ToArray()))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
@@ -152,7 +152,7 @@ namespace Pilipala.Data.UnitTests.DBase
             var headerBytes = GetHeaderBytes();
             using (var stream = new MemoryStream(headerBytes.Take(headerBytes.Length - 1).ToArray()))
             {
-                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                var exception = Assert.Throws<InvalidOperationException>(() => MetaData.Parse(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }

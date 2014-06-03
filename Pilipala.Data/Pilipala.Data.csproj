@@ -46,8 +46,8 @@
     <Compile Include="DBase\Fields\FloatField.cs" />
     <Compile Include="DBase\Fields\LogicalField.cs" />
     <Compile Include="DBase\Fields\NumericField.cs" />
-    <Compile Include="DBase\HeaderParser.cs" />
-    <Compile Include="DBase\IHeaderParser.cs" />
+    <Compile Include="DBase\MetaData.cs" />
+    <Compile Include="DBase\IMetaData.cs" />
     <Compile Include="Extensions\LinqExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ErrorMessages.Designer.cs">
