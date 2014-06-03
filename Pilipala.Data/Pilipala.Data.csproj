@@ -40,7 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBase\DBaseDataReader.cs" />
-    <Compile Include="DBase\Field.cs" />
+    <Compile Include="DBase\Fields\CharacterField.cs" />
+    <Compile Include="DBase\Fields\DateField.cs" />
+    <Compile Include="DBase\Fields\Field.cs" />
+    <Compile Include="DBase\Fields\FloatField.cs" />
+    <Compile Include="DBase\Fields\LogicalField.cs" />
+    <Compile Include="DBase\Fields\NumericField.cs" />
     <Compile Include="DBase\HeaderParser.cs" />
     <Compile Include="DBase\IHeaderParser.cs" />
     <Compile Include="Extensions\LinqExtension.cs" />

@@ -5,13 +5,14 @@ using System.Text;
 using NUnit.Framework;
 
 using Pilipala.Data.DBase;
+using Pilipala.Data.DBase.Fields;
 
 namespace Pilipala.Data.UnitTests.DBase
 {
     [TestFixture]
     public class FieldTests
     {
-        private byte[] GetFieldData(string name, char type, byte length, byte decimalCount, byte workAreaId, bool productionMdx)
+        private static byte[] GetFieldData(string name, char type, byte length, byte decimalCount, byte workAreaId, bool productionMdx)
         {
             // -----------------------------------------------------------------------------------------------------------------------
             // | Byte  | Contents | Meaning                                                                                          |
@@ -26,7 +27,6 @@ namespace Pilipala.Data.UnitTests.DBase
             // | 21-30 | 10 bytes | Reserved.                                                                                        |
             // | 31    | 1 byte   | Production MDX field flag; 01H if field has an index tag in the production MDX file, 00H if not. |
             // -----------------------------------------------------------------------------------------------------------------------
-
             var data = Encoding
                 .ASCII
                 .GetBytes(name)
@@ -40,8 +40,8 @@ namespace Pilipala.Data.UnitTests.DBase
             data[17] = decimalCount;
             data[20] = workAreaId;
             data[31] = productionMdx
-                ? (byte)1
-                : (byte)0;
+                           ? (byte)1
+                           : (byte)0;
 
             return data;
         }
@@ -61,9 +61,100 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
+        public void CanParseDateField()
+        {
+            var data = GetFieldData("Date Field", 'D', 8, 0, 0, false);
+
+            var field = Field.Parse(data);
+            Assert.That(field.Name, Is.EqualTo("Date Field"));
+            Assert.That(field.Type, Is.EqualTo("Date"));
+            Assert.That(field.Length, Is.EqualTo(8));
+            Assert.That(field.DecimalCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void CanParseFloatField()
+        {
+            var data = GetFieldData("Float Fld", 'F', 20, 8, 0, false);
+
+            var field = Field.Parse(data);
+            Assert.That(field.Name, Is.EqualTo("Float Fld"));
+            Assert.That(field.Type, Is.EqualTo("Float"));
+            Assert.That(field.Length, Is.EqualTo(20));
+            Assert.That(field.DecimalCount, Is.EqualTo(8));
+        }
+
+        [Test]
+        public void CanParseLogicalField()
+        {
+            var data = GetFieldData("Bool Field", 'L', 1, 0, 0, false);
+
+            var field = Field.Parse(data);
+            Assert.That(field.Name, Is.EqualTo("Bool Field"));
+            Assert.That(field.Type, Is.EqualTo("Logical"));
+            Assert.That(field.Length, Is.EqualTo(1));
+            Assert.That(field.DecimalCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void CanParseNumericField()
+        {
+            var data = GetFieldData("Num Field", 'N', 10, 2, 0, false);
+
+            var field = Field.Parse(data);
+            Assert.That(field.Name, Is.EqualTo("Num Field"));
+            Assert.That(field.Type, Is.EqualTo("Numeric"));
+            Assert.That(field.Length, Is.EqualTo(10));
+            Assert.That(field.DecimalCount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfDateFieldDoesNotHaveDecimalLengthOfZero()
+        {
+            var data = GetFieldData("Date Field", 'D', 8, 4, 0, false);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfDateFieldDoesNotHaveLengthOfEight()
+        {
+            var data = GetFieldData("Date Field", 'D', 10, 0, 0, false);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfFloatFieldIsLongerThanTwenty()
+        {
+            var data = GetFieldData("Float Fld", 'F', 21, 4, 0, false);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfLengthIsZero()
+        {
+            var data = GetFieldData("Char Field", 'C', 0, 0, 0, false);
+
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfLogicalFieldDoesNotHaveLengthOfOne()
+        {
+            var data = GetFieldData("Bool Field", 'L', 2, 0, 0, false);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
         public void WillGetAnExceptionIfNotEnoughBytesHaveBeenProvided()
         {
             Assert.Throws<InvalidOperationException>(() => Field.Parse(new byte[] { 0, 1, 2, 3, 4, 5 }));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfNumericFieldIsLongerThanTwenty()
+        {
+            var data = GetFieldData("Num Field", 'N', 21, 4, 0, false);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]

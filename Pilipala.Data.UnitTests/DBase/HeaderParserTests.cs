@@ -12,7 +12,7 @@ namespace Pilipala.Data.UnitTests.DBase
     [TestFixture]
     public class HeaderParserTests
     {
-        private byte[] GetHeaderBytes()
+        private static byte[] GetHeaderBytes()
         {
             return new byte[]
                    {
@@ -75,6 +75,49 @@ namespace Pilipala.Data.UnitTests.DBase
             using (var stream = new MemoryStream(headerBytes))
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => new HeaderParser(stream));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfTheHeaderLengthIsLessThanOne()
+        {
+            var headerBytes = GetHeaderBytes();
+            headerBytes[9] = 0;
+            headerBytes[10] = 0;
+            using (var stream = new MemoryStream(headerBytes))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfTheHeaderLengthIsLessThanThirtyThree()
+        {
+            var headerBytes = GetHeaderBytes();
+            var headerLength = BitConverter.GetBytes((short)32);
+            headerBytes[7] = headerLength[0];
+            headerBytes[8] = headerLength[1];
+            using (var stream = new MemoryStream(headerBytes))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfTheRecordCountIsLessThanZero()
+        {
+            var headerBytes = GetHeaderBytes();
+            var recordCount = BitConverter.GetBytes(-3);
+            headerBytes[3] = recordCount[0];
+            headerBytes[4] = recordCount[1];
+            headerBytes[5] = recordCount[2];
+            headerBytes[6] = recordCount[3];
+            using (var stream = new MemoryStream(headerBytes))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
             }
         }
 

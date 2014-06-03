@@ -23,6 +23,11 @@ namespace Pilipala.Data.DBase
             Encrypted = data[14] != 0;
             ProductionMdx = data[28] != 0;
             LanguageDriverID = data[29];
+
+            if (RecordCount < 0 || headerLength < 33 || RecordLength < 1)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
         }
 
         public bool Encrypted { get; private set; }
