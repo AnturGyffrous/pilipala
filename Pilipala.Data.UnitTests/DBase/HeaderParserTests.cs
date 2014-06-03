@@ -20,8 +20,8 @@ namespace Pilipala.Data.UnitTests.DBase
                        10, // Month last updated
                        21, // Day last updated
                        45, 1, 0, 0, // Record count
-                       177, 3, // Header byte count
-                       99, 2, // Record byte count
+                       65, 0, // Header byte count
+                       255, 0, // Record byte count
                        0, 0, // Reserved
                        1, // Incomplete transaction flag
                        1, // Encryption flag
@@ -29,7 +29,10 @@ namespace Pilipala.Data.UnitTests.DBase
                        1, // Production MDX file flag
                        3, // Language driver ID
                        0 // Reserved
-                   };
+                   }
+                   .Concat(FieldTests.GetFieldData("FIRST FIELD", 'C', 255))
+                   .Concat(new byte[] { 13 })
+                   .ToArray();
         }
 
         [Test]
@@ -40,11 +43,13 @@ namespace Pilipala.Data.UnitTests.DBase
                 var header = new HeaderParser(stream);
                 Assert.That(header.LastUpdated, Is.EqualTo(new DateTime(2015, 10, 21)));
                 Assert.That(header.RecordCount, Is.EqualTo(301));
-                Assert.That(header.RecordLength, Is.EqualTo(611));
+                Assert.That(header.RecordLength, Is.EqualTo(255));
                 Assert.That(header.IncompleteTransaction, Is.True);
                 Assert.That(header.Encrypted, Is.True);
                 Assert.That(header.ProductionMdx, Is.True);
                 Assert.That(header.LanguageDriverID, Is.EqualTo(3));
+
+                Assert.That(header.Fields.Count(), Is.EqualTo(1));
             }
         }
 
@@ -92,10 +97,10 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
-        public void WillGetAnExceptionIfTheHeaderLengthIsLessThanThirtyThree()
+        public void WillGetAnExceptionIfTheRemainderOfTheHeaderLengthDividedByThirtyTwoIsNotOne()
         {
             var headerBytes = GetHeaderBytes();
-            var headerLength = BitConverter.GetBytes((short)32);
+            var headerLength = BitConverter.GetBytes((short)96);
             headerBytes[7] = headerLength[0];
             headerBytes[8] = headerLength[1];
             using (var stream = new MemoryStream(headerBytes))
@@ -125,6 +130,27 @@ namespace Pilipala.Data.UnitTests.DBase
         public void WillGetAnExceptionIfThereIsNotEnoughHeaderData()
         {
             using (var stream = new MemoryStream(GetHeaderBytes().Take(25).ToArray()))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfThereIsNotFieldDefinitionData()
+        {
+            using (var stream = new MemoryStream(GetHeaderBytes().Take(50).ToArray()))
+            {
+                var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
+                Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));
+            }
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfTheHeaderDoesNotEndWithAFieldTerminator()
+        {
+            var headerBytes = GetHeaderBytes();
+            using (var stream = new MemoryStream(headerBytes.Take(headerBytes.Length - 1).ToArray()))
             {
                 var exception = Assert.Throws<InvalidOperationException>(() => new HeaderParser(stream));
                 Assert.That(exception.Message, Is.EqualTo(ErrorMessages.DBaseDataReader_InvalidFormat));

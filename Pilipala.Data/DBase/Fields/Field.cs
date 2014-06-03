@@ -17,7 +17,7 @@ namespace Pilipala.Data.DBase.Fields
             WorkAreaID = buffer[20];
             ProductionMdx = buffer[31] != 0;
 
-            if (Length == 0)
+            if (Length == 0 || DecimalCount > Length)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }

@@ -11,7 +11,7 @@ namespace Pilipala.Data.UnitTests.DBase
     [TestFixture]
     public class FieldTests
     {
-        private static byte[] GetFieldData(string name, char type, byte length, byte decimalCount, byte workAreaId, bool productionMdx)
+        internal static byte[] GetFieldData(string name, char type, byte length, byte decimalCount = 0, byte workAreaId = 0, bool productionMdx = false)
         {
             // -----------------------------------------------------------------------------------------------------------------------
             // | Byte  | Contents | Meaning                                                                                          |
@@ -62,7 +62,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void CanParseDateField()
         {
-            var data = GetFieldData("Date Field", 'D', 8, 0, 0, false);
+            var data = GetFieldData("Date Field", 'D', 8);
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Date Field"));
@@ -74,7 +74,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void CanParseFloatField()
         {
-            var data = GetFieldData("Float Fld", 'F', 20, 8, 0, false);
+            var data = GetFieldData("Float Fld", 'F', 20, 8);
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Float Fld"));
@@ -86,7 +86,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void CanParseLogicalField()
         {
-            var data = GetFieldData("Bool Field", 'L', 1, 0, 0, false);
+            var data = GetFieldData("Bool Field", 'L', 1);
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Bool Field"));
@@ -98,7 +98,7 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void CanParseNumericField()
         {
-            var data = GetFieldData("Num Field", 'N', 10, 2, 0, false);
+            var data = GetFieldData("Num Field", 'N', 10, 2);
 
             var field = Field.Parse(data);
             Assert.That(field.Name, Is.EqualTo("Num Field"));
@@ -110,28 +110,35 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfDateFieldDoesNotHaveDecimalLengthOfZero()
         {
-            var data = GetFieldData("Date Field", 'D', 8, 4, 0, false);
+            var data = GetFieldData("Date Field", 'D', 8, 4);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfDateFieldDoesNotHaveLengthOfEight()
         {
-            var data = GetFieldData("Date Field", 'D', 10, 0, 0, false);
+            var data = GetFieldData("Date Field", 'D', 10);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfFloatFieldIsLongerThanTwenty()
         {
-            var data = GetFieldData("Float Fld", 'F', 21, 4, 0, false);
+            var data = GetFieldData("Float Fld", 'F', 21, 4);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfDecimalCountIsGreaterThanFieldLength()
+        {
+            var data = GetFieldData("Float Fld", 'F', 10, 15);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfLengthIsZero()
         {
-            var data = GetFieldData("Char Field", 'C', 0, 0, 0, false);
+            var data = GetFieldData("Char Field", 'C', 0);
 
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
@@ -139,7 +146,14 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfLogicalFieldDoesNotHaveLengthOfOne()
         {
-            var data = GetFieldData("Bool Field", 'L', 2, 0, 0, false);
+            var data = GetFieldData("Bool Field", 'L', 2);
+            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+        }
+
+        [Test]
+        public void WillGetAnExceptionIfLogicalFieldHasDecimalCountGreaterThanZero()
+        {
+            var data = GetFieldData("Bool Field", 'L', 1, 3);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
@@ -152,14 +166,14 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void WillGetAnExceptionIfNumericFieldIsLongerThanTwenty()
         {
-            var data = GetFieldData("Num Field", 'N', 21, 4, 0, false);
+            var data = GetFieldData("Num Field", 'N', 21, 4);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfTheFieldIsAnUnknownType()
         {
-            var data = GetFieldData("Unknown Type", 'U', 10, 0, 0, false);
+            var data = GetFieldData("Unknown Type", 'U', 10);
             Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
         }
     }

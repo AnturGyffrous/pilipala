@@ -1,8 +1,12 @@
-﻿namespace Pilipala.Data.DBase
+﻿using System.Collections.Generic;
+
+using Pilipala.Data.DBase.Fields;
+
+namespace Pilipala.Data.DBase
 {
     internal interface IHeaderParser
     {
-        int FieldCount { get; }
+        IEnumerable<Field> Fields { get; }
 
         int RecordCount { get; }
     }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
+using Pilipala.Data.DBase.Fields;
 using Pilipala.Data.Resources;
 
 namespace Pilipala.Data.DBase
@@ -24,15 +26,36 @@ namespace Pilipala.Data.DBase
             ProductionMdx = data[28] != 0;
             LanguageDriverID = data[29];
 
-            if (RecordCount < 0 || headerLength < 33 || RecordLength < 1)
+            if (RecordCount < 0 || headerLength % 32 != 1 || RecordLength < 1)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
+
+            var fieldCount = (headerLength - 33) / 32;
+            var fields = new List<Field>(fieldCount);
+
+            for (var i = 0; i < fieldCount; i++)
+            {
+                data = new byte[32];
+                if (stream.Read(data, 0, 32) != 32)
+                {
+                    throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+                }
+
+                fields.Add(Field.Parse(data));
+            }
+
+            if (stream.ReadByte() != 13)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
+
+            Fields = fields;
         }
 
         public bool Encrypted { get; private set; }
 
-        public int FieldCount { get; private set; }
+        public IEnumerable<Field> Fields { get; private set; }
 
         public bool IncompleteTransaction { get; private set; }
 

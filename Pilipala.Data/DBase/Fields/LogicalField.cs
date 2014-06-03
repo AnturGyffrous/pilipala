@@ -9,7 +9,7 @@ namespace Pilipala.Data.DBase.Fields
         public LogicalField(byte[] buffer)
             : base(buffer)
         {
-            if (Length != 1)
+            if (Length != 1 || DecimalCount != 0)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
