@@ -17,5 +17,7 @@ namespace Pilipala.Data.DBase.Fields
             Type = typeof(double);
             TypeName = "Float";
         }
+
+        public override object Value { get; protected set; }
     }
 }

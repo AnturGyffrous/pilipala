@@ -53,12 +53,12 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
-        public void WillGetAnExceptionIfFieldIsAccessedBeforeReadingFirstRecord()
+        public void FieldValueIsNullBeforeReadingFirstRecord()
         {
             using (var stream = new MemoryStream(GetBytes()))
             {
                 var data = MetaData.Parse(stream);
-                //Assert.Throws<Exception>(() => data.Fields[0].Value);
+                Assert.That(data.Fields[0].Value, Is.Null);
             }
         }
 

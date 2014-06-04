@@ -17,5 +17,7 @@ namespace Pilipala.Data.DBase.Fields
             Type = typeof(DateTime);
             TypeName = "Date";
         }
+
+        public override object Value { get; protected set; }
     }
 }

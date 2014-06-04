@@ -9,5 +9,7 @@ namespace Pilipala.Data.DBase.Fields
         Type Type { get; }
 
         string TypeName { get; }
+
+        object Value { get; }
     }
 }

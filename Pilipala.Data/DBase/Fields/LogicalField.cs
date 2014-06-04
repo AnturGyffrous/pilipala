@@ -17,5 +17,7 @@ namespace Pilipala.Data.DBase.Fields
             Type = typeof(bool);
             TypeName = "Logical";
         }
+
+        public override object Value { get; protected set; }
     }
 }

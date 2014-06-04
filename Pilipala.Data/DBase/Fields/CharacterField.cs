@@ -8,5 +8,7 @@
             Type = typeof(string);
             TypeName = "Character";
         }
+
+        public override object Value { get; protected set; }
     }
 }

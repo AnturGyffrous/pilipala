@@ -23,6 +23,8 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
+        public abstract object Value { get; protected set; }
+
         public int DecimalCount { get; private set; }
 
         public int Length { get; private set; }
