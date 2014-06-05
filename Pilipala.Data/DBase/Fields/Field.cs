@@ -23,7 +23,7 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        public abstract object Value { get; protected set; }
+        public abstract object Value { get; }
 
         public int DecimalCount { get; private set; }
 
@@ -39,7 +39,9 @@ namespace Pilipala.Data.DBase.Fields
 
         public int WorkAreaID { get; private set; }
 
-        internal static Field Parse(byte[] buffer)
+        public abstract void Parse(byte[] buffer);
+
+        internal static Field ParseMetaData(byte[] buffer)
         {
             if (buffer.Length != 32)
             {

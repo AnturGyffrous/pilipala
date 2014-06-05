@@ -42,7 +42,7 @@ namespace Pilipala.Data.DBase
                     throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
                 }
 
-                fields.Add(Field.Parse(data));
+                fields.Add(Field.ParseMetaData(data));
             }
 
             if (stream.ReadByte() != 13)

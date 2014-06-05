@@ -1,14 +1,37 @@
-﻿namespace Pilipala.Data.DBase.Fields
+﻿using System;
+using System.Text;
+
+using Pilipala.Data.Resources;
+
+namespace Pilipala.Data.DBase.Fields
 {
     internal class CharacterField : Field
     {
+        private string _value;
+
         public CharacterField(byte[] buffer)
             : base(buffer)
         {
+            if (DecimalCount != 0)
+            {
+                throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
+            }
+
             Type = typeof(string);
             TypeName = "Character";
         }
 
-        public override object Value { get; protected set; }
+        public override object Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
+        public override void Parse(byte[] buffer)
+        {
+            _value = Encoding.ASCII.GetString(buffer).Trim();
+        }
     }
 }

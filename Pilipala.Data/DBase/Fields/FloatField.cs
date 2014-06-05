@@ -6,6 +6,8 @@ namespace Pilipala.Data.DBase.Fields
 {
     internal class FloatField : Field
     {
+        private double _value;
+
         public FloatField(byte[] buffer)
             : base(buffer)
         {
@@ -18,6 +20,17 @@ namespace Pilipala.Data.DBase.Fields
             TypeName = "Float";
         }
 
-        public override object Value { get; protected set; }
+        public override object Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
+        public override void Parse(byte[] buffer)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

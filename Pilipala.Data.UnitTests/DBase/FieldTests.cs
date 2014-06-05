@@ -48,16 +48,26 @@ namespace Pilipala.Data.UnitTests.DBase
         [Test]
         public void CanParseCharacterField()
         {
-            var data = GetFieldData("Char Field", 'C', 50, 3, 1, true);
-            var field = Field.Parse(data);
+            var data = GetFieldData("Char Field", 'C', 50, 0, 1, true);
+            var field = Field.ParseMetaData(data);
 
             Assert.That(field.Name, Is.EqualTo("Char Field"));
             Assert.That(field.Type, Is.EqualTo(typeof(string)));
             Assert.That(field.TypeName, Is.EqualTo("Character"));
             Assert.That(field.Length, Is.EqualTo(50));
-            Assert.That(field.DecimalCount, Is.EqualTo(3));
+            Assert.That(field.DecimalCount, Is.EqualTo(0));
             Assert.That(field.WorkAreaID, Is.EqualTo(1));
             Assert.That(field.ProductionMdx, Is.True);
+        }
+
+        [Test]
+        public void CanGetValueFromCharacterField()
+        {
+            const string fieldData = "This is an example of a Character record";
+            var data = GetFieldData("Char Field", 'C', 50);
+            var field = Field.ParseMetaData(data);
+            field.Parse(Encoding.ASCII.GetBytes(fieldData).Concat(Enumerable.Repeat((byte)32, 50)).Take(50).ToArray());
+            Assert.That(field.Value, Is.EqualTo(fieldData));
         }
 
         [Test]
@@ -65,7 +75,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             var data = GetFieldData("Date Field", 'D', 8);
 
-            var field = Field.Parse(data);
+            var field = Field.ParseMetaData(data);
             Assert.That(field.Name, Is.EqualTo("Date Field"));
             Assert.That(field.Type, Is.EqualTo(typeof(DateTime)));
             Assert.That(field.TypeName, Is.EqualTo("Date"));
@@ -78,7 +88,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             var data = GetFieldData("Float Fld", 'F', 20, 8);
 
-            var field = Field.Parse(data);
+            var field = Field.ParseMetaData(data);
             Assert.That(field.Name, Is.EqualTo("Float Fld"));
             Assert.That(field.Type, Is.EqualTo(typeof(double)));
             Assert.That(field.TypeName, Is.EqualTo("Float"));
@@ -91,7 +101,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             var data = GetFieldData("Bool Field", 'L', 1);
 
-            var field = Field.Parse(data);
+            var field = Field.ParseMetaData(data);
             Assert.That(field.Name, Is.EqualTo("Bool Field"));
             Assert.That(field.Type, Is.EqualTo(typeof(bool)));
             Assert.That(field.TypeName, Is.EqualTo("Logical"));
@@ -104,7 +114,7 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             var data = GetFieldData("Num Field", 'N', 10, 2);
 
-            var field = Field.Parse(data);
+            var field = Field.ParseMetaData(data);
             Assert.That(field.Name, Is.EqualTo("Num Field"));
             Assert.That(field.Type, Is.EqualTo(typeof(double)));
             Assert.That(field.TypeName, Is.EqualTo("Numeric"));
@@ -113,31 +123,38 @@ namespace Pilipala.Data.UnitTests.DBase
         }
 
         [Test]
+        public void WillGetAnExceptionIfCharFieldDoesNotHaveDecimalLengthOfZero()
+        {
+            var data = GetFieldData("Char Field", 'C', 50, 3);
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
+        }
+
+        [Test]
         public void WillGetAnExceptionIfDateFieldDoesNotHaveDecimalLengthOfZero()
         {
             var data = GetFieldData("Date Field", 'D', 8, 4);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfDateFieldDoesNotHaveLengthOfEight()
         {
             var data = GetFieldData("Date Field", 'D', 10);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfDecimalCountIsGreaterThanFieldLength()
         {
             var data = GetFieldData("Float Fld", 'F', 10, 15);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfFloatFieldIsLongerThanTwenty()
         {
             var data = GetFieldData("Float Fld", 'F', 21, 4);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
@@ -145,41 +162,41 @@ namespace Pilipala.Data.UnitTests.DBase
         {
             var data = GetFieldData("Char Field", 'C', 0);
 
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfLogicalFieldDoesNotHaveLengthOfOne()
         {
             var data = GetFieldData("Bool Field", 'L', 2);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfLogicalFieldHasDecimalCountGreaterThanZero()
         {
             var data = GetFieldData("Bool Field", 'L', 1, 3);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfNotEnoughBytesHaveBeenProvided()
         {
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(new byte[] { 0, 1, 2, 3, 4, 5 }));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(new byte[] { 0, 1, 2, 3, 4, 5 }));
         }
 
         [Test]
         public void WillGetAnExceptionIfNumericFieldIsLongerThanTwenty()
         {
             var data = GetFieldData("Num Field", 'N', 21, 4);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
 
         [Test]
         public void WillGetAnExceptionIfTheFieldIsAnUnknownType()
         {
             var data = GetFieldData("Unknown TypeName", 'U', 10);
-            Assert.Throws<InvalidOperationException>(() => Field.Parse(data));
+            Assert.Throws<InvalidOperationException>(() => Field.ParseMetaData(data));
         }
     }
 }
