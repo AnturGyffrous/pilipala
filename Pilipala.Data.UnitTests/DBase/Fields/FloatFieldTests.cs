@@ -11,6 +11,15 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     public class FloatFieldTests
     {
         [Test]
+        public void CanGetNullValueFromFloatField()
+        {
+            var data = FieldTests.GetFieldData("Float Fld", 'F', 10, 2);
+            var field = Field.ParseMetaData(data);
+            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 10)));
+            Assert.That(field.Value, Is.Null);
+        }
+
+        [Test]
         public void CanGetValueFromFloatField()
         {
             const double fieldValue = 598724.6171;

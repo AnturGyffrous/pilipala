@@ -8,7 +8,7 @@ namespace Pilipala.Data.DBase.Fields
 {
     internal class DateField : Field
     {
-        private DateTime _value;
+        private DateTime? _value;
 
         public DateField(byte[] buffer)
             : base(buffer)
@@ -32,7 +32,16 @@ namespace Pilipala.Data.DBase.Fields
 
         protected override void ParseData(byte[] buffer)
         {
-            _value = DateTime.ParseExact(Encoding.ASCII.GetString(buffer), "yyyyMMdd", CultureInfo.InvariantCulture);
+            var data = Encoding.ASCII.GetString(buffer).Trim();
+            DateTime value;
+            if (DateTime.TryParseExact(data, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
+            {
+                _value = value;
+            }
+            else
+            {
+                _value = null;
+            }
         }
     }
 }

@@ -11,6 +11,15 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     public class DateFieldTests
     {
         [Test]
+        public void CanGetNullValueFromDateField()
+        {
+            var data = FieldTests.GetFieldData("Date Field", 'D', 8);
+            var field = Field.ParseMetaData(data);
+            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 8)));
+            Assert.That(field.Value, Is.Null);
+        }
+
+        [Test]
         public void CanGetValueFromDateField()
         {
             var fieldValue = new DateTime(2015, 10, 21);
