@@ -52,7 +52,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DBase\DBaseDataReaderTests.cs" />
-    <Compile Include="DBase\FieldTests.cs" />
+    <Compile Include="DBase\Fields\CharacterFieldTests.cs" />
+    <Compile Include="DBase\Fields\DateFieldTests.cs" />
+    <Compile Include="DBase\Fields\FieldTests.cs" />
+    <Compile Include="DBase\Fields\FloatFieldTests.cs" />
+    <Compile Include="DBase\Fields\LogicalFieldTests.cs" />
+    <Compile Include="DBase\Fields\NumericFieldTests.cs" />
     <Compile Include="DBase\MetaDataParserTests.cs" />
     <Compile Include="ExtensionTests\LinqExtensionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 using Pilipala.Data.DBase;
 using Pilipala.Data.Resources;
+using Pilipala.Data.UnitTests.DBase.Fields;
 
 namespace Pilipala.Data.UnitTests.DBase
 {

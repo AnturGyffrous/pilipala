@@ -28,7 +28,7 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        public override void Parse(byte[] buffer)
+        protected override void ParseData(byte[] buffer)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Text;
 
 using Pilipala.Data.Resources;
 
@@ -28,9 +30,9 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        public override void Parse(byte[] buffer)
+        protected override void ParseData(byte[] buffer)
         {
-            throw new NotImplementedException();
+            _value = DateTime.ParseExact(Encoding.ASCII.GetString(buffer), "yyyyMMdd", CultureInfo.InvariantCulture);
         }
     }
 }

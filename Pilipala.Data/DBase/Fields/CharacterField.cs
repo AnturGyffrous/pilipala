@@ -29,7 +29,7 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        public override void Parse(byte[] buffer)
+        protected override void ParseData(byte[] buffer)
         {
             _value = Encoding.ASCII.GetString(buffer).Trim();
         }
