@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using NUnit.Framework;
 
@@ -9,6 +10,25 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     [TestFixture]
     public class NumericFieldTests
     {
+        [Test]
+        public void CanGetNullValueFromFloatField()
+        {
+            var data = FieldTests.GetFieldData("Num Field", 'N', 10, 2);
+            var field = Field.ParseMetaData(data);
+            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 10)));
+            Assert.That(field.Value, Is.Null);
+        }
+
+        [Test]
+        public void CanGetValueFromFloatField()
+        {
+            const double fieldValue = -84430.56;
+            var data = FieldTests.GetFieldData("Num Field", 'N', 10, 2);
+            var field = Field.ParseMetaData(data);
+            field.Parse(Encoding.ASCII.GetBytes(string.Format("{0,10}", fieldValue)));
+            Assert.That(field.Value, Is.EqualTo(fieldValue));
+        }
+
         [Test]
         public void CanParseNumericField()
         {

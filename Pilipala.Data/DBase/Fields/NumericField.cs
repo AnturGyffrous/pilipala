@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using Pilipala.Data.Resources;
 
@@ -6,7 +7,7 @@ namespace Pilipala.Data.DBase.Fields
 {
     internal class NumericField : Field
     {
-        private double _value;
+        private double? _value;
 
         public NumericField(byte[] buffer)
             : base(buffer)
@@ -30,7 +31,15 @@ namespace Pilipala.Data.DBase.Fields
 
         protected override void ParseData(byte[] buffer)
         {
-            throw new NotImplementedException();
+            double value;
+            if (double.TryParse(Encoding.ASCII.GetString(buffer).Trim(), out value))
+            {
+                _value = value;
+            }
+            else
+            {
+                _value = null;
+            }
         }
     }
 }
