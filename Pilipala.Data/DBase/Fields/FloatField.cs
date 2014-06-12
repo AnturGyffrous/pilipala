@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using Pilipala.Data.Resources;
 
@@ -30,7 +31,7 @@ namespace Pilipala.Data.DBase.Fields
 
         protected override void ParseData(byte[] buffer)
         {
-            throw new NotImplementedException();
+            _value = double.Parse(Encoding.ASCII.GetString(buffer).Trim());
         }
     }
 }

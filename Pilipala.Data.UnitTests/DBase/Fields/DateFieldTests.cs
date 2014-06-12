@@ -10,15 +10,14 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     [TestFixture]
     public class DateFieldTests
     {
-
         [Test]
         public void CanGetValueFromDateField()
         {
-            var fieldData = new DateTime(2015, 10, 21);
+            var fieldValue = new DateTime(2015, 10, 21);
             var data = FieldTests.GetFieldData("Date Field", 'D', 8);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(fieldData.ToString("yyyyMMdd")));
-            Assert.That(field.Value, Is.EqualTo(fieldData));
+            field.Parse(Encoding.ASCII.GetBytes(fieldValue.ToString("yyyyMMdd")));
+            Assert.That(field.Value, Is.EqualTo(fieldValue));
         }
 
         [Test]
