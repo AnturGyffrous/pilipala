@@ -9,6 +9,24 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     [TestFixture]
     public class LogicalFieldTests
     {
+        [TestCase('?', null)]
+        [TestCase(' ', null)]
+        [TestCase('Y', true)]
+        [TestCase('y', true)]
+        [TestCase('N', false)]
+        [TestCase('n', false)]
+        [TestCase('T', true)]
+        [TestCase('t', true)]
+        [TestCase('F', false)]
+        [TestCase('f', false)]
+        public void CanGetValueFromLogicalField(char value, bool? expected)
+        {
+            var data = FieldTests.GetFieldData("Accepted", 'L', 1);
+            var field = Field.ParseMetaData(data);
+            field.Parse(new[] { (byte)value });
+            Assert.That(field.Value, Is.EqualTo(expected));
+        }
+
         [Test]
         public void CanParseLogicalField()
         {

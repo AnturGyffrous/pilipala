@@ -6,7 +6,7 @@ namespace Pilipala.Data.DBase.Fields
 {
     internal class LogicalField : Field
     {
-        private bool _value;
+        private bool? _value;
 
         public LogicalField(byte[] buffer)
             : base(buffer)
@@ -30,7 +30,24 @@ namespace Pilipala.Data.DBase.Fields
 
         protected override void ParseData(byte[] buffer)
         {
-            throw new NotImplementedException();
+            switch ((char)buffer[0])
+            {
+                case 'Y':
+                case 'y':
+                case 'T':
+                case 't':
+                    _value = true;
+                    return;
+                case 'N':
+                case 'n':
+                case 'F':
+                case 'f':
+                    _value = false;
+                    return;
+                default:
+                    _value = null;
+                    return;
+            }
         }
     }
 }
