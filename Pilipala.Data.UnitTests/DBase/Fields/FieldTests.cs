@@ -58,7 +58,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
             var data = GetFieldData("Char Field", 'C', 50);
             var field = Field.ParseMetaData(data);
 
-            Assert.Throws<InvalidOperationException>(() => field.Parse(Encoding.ASCII.GetBytes("Hello, world")));
+            Assert.Throws<InvalidOperationException>(() => field.Parse(Encoding.ASCII.GetBytes("Hello, world"), 0));
         }
 
         [Test]

@@ -25,7 +25,7 @@ namespace Pilipala.Data.DBase
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            _metaData = MetaData.Parse(_stream);
+            _metaData = MetaData.Initialise(_stream);
         }
 
         public override int Depth
@@ -217,7 +217,7 @@ namespace Pilipala.Data.DBase
 
         public override bool Read()
         {
-            throw new NotImplementedException();
+            return _metaData.Read();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Pilipala.Data.UnitTests.DBase
     public class DBaseDataReaderTests
     {
         [Test]
-        public void CanReadDbfTable()
+        public void CanOpenDbfTableUsingStream()
         {
             using (var stream = new MemoryStream(Properties.Resources.example))
             {
@@ -24,8 +24,6 @@ namespace Pilipala.Data.UnitTests.DBase
                     Assert.That(reader.Depth, Is.EqualTo(0));
                     Assert.That(reader.RecordsAffected, Is.EqualTo(1));
                     Assert.That(reader.FieldCount, Is.EqualTo(57));
-
-                    //Assert.That(reader.Read(), Is.True);
                 }
             }
         }
@@ -56,6 +54,31 @@ namespace Pilipala.Data.UnitTests.DBase
             var reader = typeof(DBaseDataReader);
             Assert.That(reader.BaseType, Is.EqualTo(typeof(DbDataReader)));
             Assert.That(reader.GetInterfaces(), Has.Member(typeof(IDisposable)));
+        }
+
+        [Test]
+        public void ReadReturnsFalseWhenThereAreNoMoreRecordsToRead()
+        {
+            using (var stream = new MemoryStream(Properties.Resources.example))
+            {
+                using (var reader = DBaseDataReader.Create(stream) as DbDataReader)
+                {
+                    Assert.That(reader.Read(), Is.True);
+                    Assert.That(reader.Read(), Is.False);
+                }
+            }
+        }
+
+        [Test]
+        public void ReadReturnsTrueWhenThereIsARecordToRead()
+        {
+            using (var stream = new MemoryStream(Properties.Resources.example))
+            {
+                using (var reader = DBaseDataReader.Create(stream) as DbDataReader)
+                {
+                    Assert.That(reader.Read(), Is.True);
+                }
+            }
         }
 
         [Test]

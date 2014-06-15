@@ -15,7 +15,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
         {
             var data = FieldTests.GetFieldData("Date Field", 'D', 8);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 8)));
+            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 8)), 0);
             Assert.That(field.Value, Is.Null);
         }
 
@@ -25,7 +25,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
             var fieldValue = new DateTime(2015, 10, 21);
             var data = FieldTests.GetFieldData("Date Field", 'D', 8);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(fieldValue.ToString("yyyyMMdd")));
+            field.Parse(Encoding.ASCII.GetBytes(fieldValue.ToString("yyyyMMdd")), 0);
             Assert.That(field.Value, Is.EqualTo(fieldValue));
         }
 

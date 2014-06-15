@@ -28,9 +28,9 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        protected override void ParseData(byte[] buffer)
+        protected override void ParseData(byte[] buffer, int offset)
         {
-            switch ((char)buffer[0])
+            switch ((char)buffer[offset])
             {
                 case 'Y':
                 case 'y':

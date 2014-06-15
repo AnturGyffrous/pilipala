@@ -23,7 +23,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
         {
             var data = FieldTests.GetFieldData("Accepted", 'L', 1);
             var field = Field.ParseMetaData(data);
-            field.Parse(new[] { (byte)value });
+            field.Parse(new[] { (byte)value }, 0);
             Assert.That(field.Value, Is.EqualTo(expected));
         }
 

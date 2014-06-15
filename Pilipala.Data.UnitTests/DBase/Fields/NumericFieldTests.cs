@@ -15,7 +15,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
         {
             var data = FieldTests.GetFieldData("Num Field", 'N', 10, 2);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 10)));
+            field.Parse(Encoding.ASCII.GetBytes(new string(' ', 10)), 0);
             Assert.That(field.Value, Is.Null);
         }
 
@@ -25,7 +25,7 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
             const double fieldValue = -84430.56;
             var data = FieldTests.GetFieldData("Num Field", 'N', 10, 2);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(string.Format("{0,10}", fieldValue)));
+            field.Parse(Encoding.ASCII.GetBytes(string.Format("{0,10}", fieldValue)), 0);
             Assert.That(field.Value, Is.EqualTo(fieldValue));
         }
 

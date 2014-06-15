@@ -11,13 +11,18 @@ namespace Pilipala.Data.UnitTests.DBase.Fields
     [TestFixture]
     public class CharacterFieldTests
     {
+        internal static byte[] CreateStringFieldData(string value, int length)
+        {
+            return Encoding.ASCII.GetBytes(value).Concat(Enumerable.Repeat((byte)32, length)).Take(length).ToArray();
+        }
+
         [Test]
         public void CanGetValueFromCharacterField()
         {
             const string fieldValue = "This is an example of a Character record";
             var data = FieldTests.GetFieldData("Char Field", 'C', 50);
             var field = Field.ParseMetaData(data);
-            field.Parse(Encoding.ASCII.GetBytes(fieldValue).Concat(Enumerable.Repeat((byte)32, 50)).Take(50).ToArray());
+            field.Parse(CreateStringFieldData(fieldValue, 50), 0);
             Assert.That(field.Value, Is.EqualTo(fieldValue));
         }
 

@@ -7,5 +7,7 @@ namespace Pilipala.Data.DBase
         IField[] Fields { get; }
 
         int RecordsAffected { get; }
+
+        bool Read();
     }
 }

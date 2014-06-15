@@ -29,9 +29,9 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        protected override void ParseData(byte[] buffer)
+        protected override void ParseData(byte[] buffer, int offset)
         {
-            _value = Encoding.ASCII.GetString(buffer).Trim();
+            _value = Encoding.ASCII.GetString(buffer, offset, Length).Trim();
         }
     }
 }

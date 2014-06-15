@@ -9,15 +9,24 @@ namespace Pilipala.Data.DBase
 {
     internal class MetaData : IMetaData
     {
+        private const byte _deletedFlag = 0x2a; // Asterisk character (*)
+
+        private const byte _endOfFileMarker = 0x1a;
+
+        private const byte _headerTerminator = 0xd;
+
+        private readonly Stream _stream;
+
         private MetaData(Stream stream)
         {
+            _stream = stream;
             var data = new byte[31];
-            if (stream.Read(data, 0, 31) != 31)
+            if (_stream.Read(data, 0, 31) != 31)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            SetLastUpdatedDate(data[0], data[1], data[2]);
+            LastUpdated = GetLastUpdatedDate(data[0], data[1], data[2]);
             RecordsAffected = BitConverter.ToInt32(data, 3);
             var headerLength = BitConverter.ToInt16(data, 7);
             RecordLength = BitConverter.ToInt16(data, 9);
@@ -37,7 +46,7 @@ namespace Pilipala.Data.DBase
             for (var i = 0; i < fieldCount; i++)
             {
                 data = new byte[32];
-                if (stream.Read(data, 0, 32) != 32)
+                if (_stream.Read(data, 0, 32) != 32)
                 {
                     throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
                 }
@@ -45,7 +54,7 @@ namespace Pilipala.Data.DBase
                 fields.Add(Field.ParseMetaData(data));
             }
 
-            if (stream.ReadByte() != 13)
+            if (_stream.ReadByte() != _headerTerminator)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
@@ -69,12 +78,35 @@ namespace Pilipala.Data.DBase
 
         public int RecordsAffected { get; private set; }
 
-        public static MetaData Parse(Stream stream)
+        public static MetaData Initialise(Stream stream)
         {
             return new MetaData(stream);
         }
 
-        private void SetLastUpdatedDate(byte year, byte month, byte day)
+        public bool Read()
+        {
+            var buffer = new byte[RecordLength];
+            do
+            {
+                var count = _stream.Read(buffer, 0, RecordLength);
+                if (count < RecordLength || buffer[0] == _endOfFileMarker)
+                {
+                    return false;
+                }
+            }
+            while (buffer[0] == _deletedFlag);
+
+            var position = 1;
+            foreach (var field in Fields)
+            {
+                field.Parse(buffer, position);
+                position += field.Length;
+            }
+
+            return true;
+        }
+
+        private DateTime GetLastUpdatedDate(byte year, byte month, byte day)
         {
             if (year > 99 || month < 1 || month > 12 || day < 1 || day > 31)
             {
@@ -85,7 +117,7 @@ namespace Pilipala.Data.DBase
                               ? 2000
                               : 1900;
 
-            LastUpdated = new DateTime(century + year, month, day);
+            return new DateTime(century + year, month, day);
         }
     }
 }

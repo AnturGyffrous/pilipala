@@ -39,17 +39,15 @@ namespace Pilipala.Data.DBase.Fields
 
         public int WorkAreaID { get; private set; }
 
-        public void Parse(byte[] buffer)
+        public void Parse(byte[] buffer, int offset)
         {
-            if (buffer.Length != Length)
+            if ((buffer.Length - offset) < Length)
             {
                 throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
 
-            ParseData(buffer);
+            ParseData(buffer, offset);
         }
-
-        protected abstract void ParseData(byte[] buffer);
 
         internal static Field ParseMetaData(byte[] buffer)
         {
@@ -74,5 +72,7 @@ namespace Pilipala.Data.DBase.Fields
                     throw new InvalidOperationException(ErrorMessages.DBaseDataReader_InvalidFormat);
             }
         }
+
+        protected abstract void ParseData(byte[] buffer, int offset);
     }
 }

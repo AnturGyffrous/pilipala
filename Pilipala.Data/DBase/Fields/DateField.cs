@@ -30,9 +30,9 @@ namespace Pilipala.Data.DBase.Fields
             }
         }
 
-        protected override void ParseData(byte[] buffer)
+        protected override void ParseData(byte[] buffer, int offset)
         {
-            var data = Encoding.ASCII.GetString(buffer).Trim();
+            var data = Encoding.ASCII.GetString(buffer, offset, Length).Trim();
             DateTime value;
             if (DateTime.TryParseExact(data, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out value))
             {
