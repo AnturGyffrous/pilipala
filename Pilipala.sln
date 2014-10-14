@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilipala.Data.UnitTests", "Pilipala.Data.UnitTests\Pilipala.Data.UnitTests.csproj", "{AE543BEB-E139-4763-92D0-A5969274333E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilipala.Data", "Pilipala.Data\Pilipala.Data.csproj", "{069987F1-64D7-401C-944D-26A1644C6877}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE543BEB-E139-4763-92D0-A5969274333E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE543BEB-E139-4763-92D0-A5969274333E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE543BEB-E139-4763-92D0-A5969274333E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE543BEB-E139-4763-92D0-A5969274333E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{069987F1-64D7-401C-944D-26A1644C6877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{069987F1-64D7-401C-944D-26A1644C6877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{069987F1-64D7-401C-944D-26A1644C6877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{069987F1-64D7-401C-944D-26A1644C6877}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
