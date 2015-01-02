@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 
+using JetBrains.Annotations;
+
 namespace Pilipala.Data.Xbase
 {
     public class Xbase3DataParser : IXbaseDataParser
@@ -57,6 +59,7 @@ namespace Pilipala.Data.Xbase
             return new Xbase3DataParser(stream);
         }
 
+        [AssertionMethod]
         private static void CheckVersion(byte version)
         {
             if (version != 3)
@@ -77,6 +80,7 @@ namespace Pilipala.Data.Xbase
             }
         }
 
+        [AssertionMethod]
         private static void ValidateHeaderLength(short headerLength)
         {
             if (headerLength % 32 != 1)
