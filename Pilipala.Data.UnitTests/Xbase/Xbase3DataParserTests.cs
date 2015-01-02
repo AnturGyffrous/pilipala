@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 
 using FluentAssertions;
 
@@ -31,24 +30,15 @@ namespace Pilipala.Data.UnitTests.Xbase
             bool expectedMdxFlag, 
             int languageDriverId)
         {
-            var data = new byte[]
-                       {
-                           3, // Version number
-                           115, 10, 21, // Last updated date without century YYMMDD, valid year interval is 0x00 - 0xff, add to base year of 1900 for interval 1900 - 2155.
-                           0, 0, 0, 0, // Record count (little endian)
-                           33, 0, // Header byte count (little endian)
-                           0, 0, // Sum of lengths of all fields + 1 for deletion flag (little endian)
-                           0, 0, // Reserved
-                           (byte)incompleteTransactionFlagValue, // Incomplete transaction flag
-                           (byte)encryptionFlagValue, // Encryption flag
-                           0, 0, 0, 0, // Free record thread (reserved for LAN only)
-                           0, 0, 0, 0, 0, 0, 0, 0, // Reserved for multi-user dBASE ( dBASE III+ - )
-                           (byte)mdxFlagValue, // MDX flag (dBASE IV)
-                           (byte)languageDriverId, // Language driver ID
-                           0, // Reserved
-                           0xd // Header terminator
-                       };
-            using (var stream = new MemoryStream(data))
+            var generator = new Xbase3DataGenerator
+                            {
+                                IncompleteTransactionFlag = (byte)incompleteTransactionFlagValue, 
+                                EncryptionFlag = (byte)encryptionFlagValue, 
+                                MdxFlag = (byte)mdxFlagValue, 
+                                LanguageDriverId = (byte)languageDriverId
+                            };
+
+            using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = Xbase3DataParser.Create(stream);
                 parser.LastUpdated.Should().Be(new DateTime(2015, 10, 21));
@@ -75,7 +65,9 @@ namespace Pilipala.Data.UnitTests.Xbase
         [InlineData(115, 2, 29)]
         public void WillGetAnExceptionIfLastModifiedDateIsInvalid(int year, int month, int day)
         {
-            using (var stream = new MemoryStream(new[] { (byte)3, (byte)year, (byte)month, (byte)day }.Concat(new byte[28]).ToArray()))
+            var generator = new Xbase3DataGenerator { LastUpdatedYear = (byte)year, LastUpdatedMonth = (byte)month, LastUpdatedDay = (byte)day };
+
+            using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
             }
@@ -93,9 +85,9 @@ namespace Pilipala.Data.UnitTests.Xbase
         [Fact]
         public void WillGetAnExceptionIfTheRecordCountIsLessThanZero()
         {
-            var recordCount = BitConverter.GetBytes(-3);
-            var data = new byte[] { 3, 115, 10, 21, recordCount[0], recordCount[1], recordCount[2], recordCount[3] }.Concat(new byte[24]).ToArray();
-            using (var stream = new MemoryStream(data))
+            var generator = new Xbase3DataGenerator { RecordCount = -3 };
+
+            using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
             }
@@ -104,9 +96,8 @@ namespace Pilipala.Data.UnitTests.Xbase
         [Fact]
         public void WillGetAnExceptionIfTheRemainderOfTheHeaderLengthDividedByThirtyTwoIsNotOne()
         {
-            var headerLength = BitConverter.GetBytes((short)96);
-            var data = new byte[] { 3, 115, 10, 21, 0, 0, 0, 0, headerLength[0], headerLength[1] }.Concat(new byte[22]).ToArray();
-            using (var stream = new MemoryStream(data))
+            var generator = new Xbase3DataGenerator { HeaderByteCount = 96 };
+            using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
             }
@@ -121,7 +112,8 @@ namespace Pilipala.Data.UnitTests.Xbase
         [Fact]
         public void WillGetAnExceptionIfTheVersionIsNotSupported()
         {
-            using (var stream = new MemoryStream(new byte[32]))
+            var generator = new Xbase3DataGenerator { Version = 0 };
+            using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
             }
