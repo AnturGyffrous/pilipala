@@ -61,10 +61,11 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Xbase\Xbase3DataGenerator.cs" />
+    <Compile Include="Xbase\Xbase3\DataGenerator.cs" />
+    <Compile Include="Xbase\Xbase3\FieldDescriptionParserTests.cs" />
+    <Compile Include="Xbase\Xbase3\HeaderParserTests.cs" />
     <Compile Include="Xbase\XbaseDataReaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Xbase\Xbase3DataParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

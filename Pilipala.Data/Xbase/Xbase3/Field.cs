@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Text;
 
-namespace Pilipala.Data.Xbase
+namespace Pilipala.Data.Xbase.Xbase3
 {
-    internal abstract class Xbase3Field : IField
+    internal abstract class Field : IField
     {
-        protected Xbase3Field(byte[] buffer)
+        protected Field(byte[] buffer)
         {
             var name = Take<byte>(buffer, 11, 0);
             Name = Encoding.ASCII.GetString(name, 0, name.Length);
@@ -28,12 +28,12 @@ namespace Pilipala.Data.Xbase
             throw new NotImplementedException();
         }
 
-        internal static Xbase3Field Create(byte[] buffer)
+        internal static Field Create(byte[] buffer)
         {
             switch ((char)buffer[11])
             {
                 case 'N':
-                    return new Xbase3NumericField(buffer);
+                    return new NumericField(buffer);
             }
 
             throw new NotImplementedException();

@@ -3,26 +3,15 @@ using System.IO;
 
 using FluentAssertions;
 
-using Pilipala.Data.Xbase;
+using Pilipala.Data.Xbase.Xbase3;
 
 using Xunit;
 using Xunit.Extensions;
 
-namespace Pilipala.Data.UnitTests.Xbase
+namespace Pilipala.Data.UnitTests.Xbase.Xbase3
 {
-    public class Xbase3DataParserTests
+    public class HeaderParserTests
     {
-        [Fact]
-        public void CanParseXbase3FieldDefinitions()
-        {
-            var generator = new Xbase3DataGenerator();
-            using (var stream = new MemoryStream(generator.GetData()))
-            {
-                var parser = Xbase3DataParser.Create(stream);
-                parser.Fields.Should().HaveCount(1);
-            }
-        }
-
         [Theory]
         [InlineData(0, false, 0, false, 0, false, 0)]
         [InlineData(1, true, 0, false, 0, false, 0)]
@@ -41,7 +30,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             bool expectedMdxFlag, 
             int languageDriverId)
         {
-            var generator = new Xbase3DataGenerator
+            var generator = new DataGenerator
                             {
                                 IncompleteTransactionFlag = (byte)incompleteTransactionFlagValue, 
                                 EncryptionFlag = (byte)encryptionFlagValue, 
@@ -51,7 +40,7 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                var parser = Xbase3DataParser.Create(stream);
+                var parser = DataParser.Create(stream);
                 parser.LastUpdated.Should().Be(new DateTime(2015, 10, 21));
                 parser.RecordsAffected.Should().Be(0);
                 parser.RecordLength.Should().Be(2);
@@ -65,7 +54,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         [Fact]
         public void ParserHasNoPublicConstructors()
         {
-            typeof(Xbase3DataParser).GetConstructors().Should().HaveCount(0);
+            typeof(DataParser).GetConstructors().Should().HaveCount(0);
         }
 
         [Theory]
@@ -76,11 +65,11 @@ namespace Pilipala.Data.UnitTests.Xbase
         [InlineData(115, 2, 29)]
         public void WillGetAnExceptionIfLastModifiedDateIsInvalid(int year, int month, int day)
         {
-            var generator = new Xbase3DataGenerator { LastUpdatedYear = (byte)year, LastUpdatedMonth = (byte)month, LastUpdatedDay = (byte)day };
+            var generator = new DataGenerator { LastUpdatedYear = (byte)year, LastUpdatedMonth = (byte)month, LastUpdatedDay = (byte)day };
 
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
 
@@ -89,18 +78,18 @@ namespace Pilipala.Data.UnitTests.Xbase
         {
             using (var stream = new MemoryStream())
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
 
         [Fact]
         public void WillGetAnExceptionIfTheRecordCountIsLessThanZero()
         {
-            var generator = new Xbase3DataGenerator { RecordCount = -3 };
+            var generator = new DataGenerator { RecordCount = -3 };
 
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
 
@@ -110,37 +99,37 @@ namespace Pilipala.Data.UnitTests.Xbase
         [InlineData(1)]
         public void WillGetAnExceptionIfTheRecordLengthIsLessThanTwo(int recordLength)
         {
-            var generator = new Xbase3DataGenerator { RecordLength = (short)recordLength };
+            var generator = new DataGenerator { RecordLength = (short)recordLength };
 
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
 
         [Fact]
         public void WillGetAnExceptionIfTheRemainderOfTheHeaderLengthDividedByThirtyTwoIsNotOne()
         {
-            var generator = new Xbase3DataGenerator { HeaderByteCount = 96 };
+            var generator = new DataGenerator { HeaderByteCount = 96 };
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
 
         [Fact]
         public void WillGetAnExceptionIfTheStreamIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => Xbase3DataParser.Create(null));
+            Assert.Throws<ArgumentNullException>(() => DataParser.Create(null));
         }
 
         [Fact]
         public void WillGetAnExceptionIfTheVersionIsNotSupported()
         {
-            var generator = new Xbase3DataGenerator { Version = 0 };
+            var generator = new DataGenerator { Version = 0 };
             using (var stream = new MemoryStream(generator.GetData()))
             {
-                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+                Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
             }
         }
     }

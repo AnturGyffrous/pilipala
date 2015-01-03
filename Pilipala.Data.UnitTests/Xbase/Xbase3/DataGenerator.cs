@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Pilipala.Data.UnitTests.Xbase
+namespace Pilipala.Data.UnitTests.Xbase.Xbase3
 {
-    internal class Xbase3DataGenerator
+    internal class DataGenerator
     {
-        public Xbase3DataGenerator()
+        public DataGenerator()
         {
             Version = 3;
             LastUpdatedYear = 115;

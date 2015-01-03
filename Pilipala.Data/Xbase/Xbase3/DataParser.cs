@@ -4,11 +4,11 @@ using System.IO;
 
 using JetBrains.Annotations;
 
-namespace Pilipala.Data.Xbase
+namespace Pilipala.Data.Xbase.Xbase3
 {
-    public class Xbase3DataParser : IXbaseDataParser
+    public class DataParser : IXbaseDataParser
     {
-        private Xbase3DataParser(Stream stream)
+        private DataParser(Stream stream)
         {
             var data = new byte[32];
             if (stream.Read(data, 0, 32) != 32)
@@ -39,7 +39,7 @@ namespace Pilipala.Data.Xbase
             var fields = new List<IField>(fieldCount);
             data = new byte[32];
             stream.Read(data, 0, 32);
-            fields.Add(Xbase3Field.Create(data));
+            fields.Add(Field.Create(data));
             Fields = fields;
         }
 
@@ -59,14 +59,14 @@ namespace Pilipala.Data.Xbase
 
         public int RecordsAffected { get; private set; }
 
-        public static Xbase3DataParser Create(Stream stream)
+        public static DataParser Create(Stream stream)
         {
             if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
 
-            return new Xbase3DataParser(stream);
+            return new DataParser(stream);
         }
 
         [AssertionMethod]
