@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 using JetBrains.Annotations;
@@ -22,9 +23,9 @@ namespace Pilipala.Data.Xbase
 
             RecordsAffected = ValidateRecordCount(BitConverter.ToInt32(data, 4));
 
-            ValidateHeaderLength(BitConverter.ToInt16(data, 8));
+            var headerLength = ValidateHeaderLength(BitConverter.ToInt16(data, 8));
 
-            RecordLength = BitConverter.ToInt16(data, 10);
+            RecordLength = ValidateRecordLength(BitConverter.ToInt16(data, 10));
 
             IncompleteTransaction = data[14] != 0;
 
@@ -33,9 +34,18 @@ namespace Pilipala.Data.Xbase
             Mdx = data[28] != 0;
 
             LanguageDriverID = data[29];
+
+            var fieldCount = (headerLength - 33) / 32;
+            var fields = new List<IField>(fieldCount);
+            data = new byte[32];
+            stream.Read(data, 0, 32);
+            fields.Add(Xbase3Field.Create(data));
+            Fields = fields;
         }
 
         public bool Encrypted { get; private set; }
+
+        public IEnumerable<IField> Fields { get; private set; }
 
         public bool IncompleteTransaction { get; private set; }
 
@@ -80,13 +90,14 @@ namespace Pilipala.Data.Xbase
             }
         }
 
-        [AssertionMethod]
-        private static void ValidateHeaderLength(short headerLength)
+        private static short ValidateHeaderLength(short headerLength)
         {
             if (headerLength % 32 != 1)
             {
                 throw new InvalidOperationException("The reported header length is invalid.");
             }
+
+            return headerLength;
         }
 
         private static int ValidateRecordCount(int recordCount)
@@ -97,6 +108,16 @@ namespace Pilipala.Data.Xbase
             }
 
             return recordCount;
+        }
+
+        private static short ValidateRecordLength(short recordLength)
+        {
+            if (recordLength <= 1)
+            {
+                throw new InvalidOperationException("The sum of the lengths of all the fields could not be parsed, it must have a value of at least two.");
+            }
+
+            return recordLength;
         }
     }
 }

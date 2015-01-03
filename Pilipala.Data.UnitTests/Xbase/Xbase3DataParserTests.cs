@@ -12,6 +12,17 @@ namespace Pilipala.Data.UnitTests.Xbase
 {
     public class Xbase3DataParserTests
     {
+        [Fact]
+        public void CanParseXbase3FieldDefinitions()
+        {
+            var generator = new Xbase3DataGenerator();
+            using (var stream = new MemoryStream(generator.GetData()))
+            {
+                var parser = Xbase3DataParser.Create(stream);
+                parser.Fields.Should().HaveCount(1);
+            }
+        }
+
         [Theory]
         [InlineData(0, false, 0, false, 0, false, 0)]
         [InlineData(1, true, 0, false, 0, false, 0)]
@@ -21,7 +32,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         [InlineData(0, false, 0, false, 1, true, 0)]
         [InlineData(0, false, 0, false, 55, true, 0)]
         [InlineData(11, true, 5, true, 55, true, 21)]
-        public void CanParseXbase3DataStream(
+        public void CanParseXbase3Header(
             int incompleteTransactionFlagValue, 
             bool expectedIncompleteTransactionFlag, 
             int encryptionFlagValue, 
@@ -43,7 +54,7 @@ namespace Pilipala.Data.UnitTests.Xbase
                 var parser = Xbase3DataParser.Create(stream);
                 parser.LastUpdated.Should().Be(new DateTime(2015, 10, 21));
                 parser.RecordsAffected.Should().Be(0);
-                parser.RecordLength.Should().Be(0);
+                parser.RecordLength.Should().Be(2);
                 parser.IncompleteTransaction.Should().Be(expectedIncompleteTransactionFlag);
                 parser.Encrypted.Should().Be(expectedEncryptionFlag);
                 parser.Mdx.Should().Be(expectedMdxFlag);
@@ -86,6 +97,20 @@ namespace Pilipala.Data.UnitTests.Xbase
         public void WillGetAnExceptionIfTheRecordCountIsLessThanZero()
         {
             var generator = new Xbase3DataGenerator { RecordCount = -3 };
+
+            using (var stream = new MemoryStream(generator.GetData()))
+            {
+                Assert.Throws<InvalidOperationException>(() => Xbase3DataParser.Create(stream));
+            }
+        }
+
+        [Theory]
+        [InlineData(-5)]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void WillGetAnExceptionIfTheRecordLengthIsLessThanTwo(int recordLength)
+        {
+            var generator = new Xbase3DataGenerator { RecordLength = (short)recordLength };
 
             using (var stream = new MemoryStream(generator.GetData()))
             {

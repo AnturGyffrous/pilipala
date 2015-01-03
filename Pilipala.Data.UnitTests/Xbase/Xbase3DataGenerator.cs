@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Pilipala.Data.UnitTests.Xbase
 {
@@ -11,15 +14,18 @@ namespace Pilipala.Data.UnitTests.Xbase
             LastUpdatedMonth = 10;
             LastUpdatedDay = 21;
             RecordCount = 0;
-            HeaderByteCount = 33;
-            RecordLength = 0;
+            HeaderByteCount = 65;
+            RecordLength = 2;
             IncompleteTransactionFlag = 0;
             EncryptionFlag = 0;
             MdxFlag = 0;
             LanguageDriverId = 0;
+            Fields = new List<byte[]> { CreateFieldDescriptor("ID", 'N', 10) };
         }
 
         internal byte EncryptionFlag { get; set; }
+
+        internal IEnumerable<byte[]> Fields { get; set; }
 
         internal short HeaderByteCount { get; set; }
 
@@ -61,8 +67,7 @@ namespace Pilipala.Data.UnitTests.Xbase
                            0, 0, 0, 0, 0, 0, 0, 0, // Reserved for multi-user dBASE ( dBASE III+ - )
                            MdxFlag, // MDX flag (dBASE IV)
                            LanguageDriverId, // Language driver ID
-                           0, // Reserved
-                           0xd // Header terminator
+                           0, 0 // Reserved
                        };
 
             var array = BitConverter.GetBytes(RecordCount);
@@ -73,6 +78,44 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             array = BitConverter.GetBytes(RecordLength);
             Array.Copy(array, 0, data, 10, array.Length);
+
+            var headerTerminator = new byte[] { 0xd };
+
+            return data.Concat(Fields.SelectMany(x => x)).Concat(headerTerminator).ToArray();
+        }
+
+        private static byte[] CreateFieldDescriptor(string name, char type, byte length, byte decimalCount = 0, byte workAreaId = 0, bool productionMdx = false)
+        {
+            // -----------------------------------------------------------------------------------------------------------------------
+            // | Byte  | Contents | Meaning                                                                                          |
+            // |-------|----------|--------------------------------------------------------------------------------------------------|
+            // | 0-10  | 11 bytes | Field name in ASCII (terminated by 00h).                                                         |
+            // | 11    | 1 byte   | Field type in ASCII (C, D, F, L, M, or N).                                                       |
+            // | 12-15 | 4 bytes  | Field data address (in memory !!! dBASE III+).                                                   |
+            // | 16    | 1 byte   | Field length in binary.                                                                          |
+            // | 17    | 1 byte   | Field decimal count in binary.                                                                   |
+            // | 18-19 | 2 bytes  | Reserved for multi-user dBASE.                                                                   |
+            // | 20    | 1 byte   | Work area ID.                                                                                    |
+            // | 21-22 | 2 bytes  | Reserved for multi-user dBASE.                                                                   |
+            // | 23    | 1 byte   | Flag for SET FIELDS.                                                                             |
+            // | 24-30 | 7 bytes  | Reserved.                                                                                        |
+            // | 31    | 1 byte   | Production MDX field flag; 01H if field has an index tag in the production MDX file, 00H if not. |
+            // -----------------------------------------------------------------------------------------------------------------------
+            var data = Encoding
+                .ASCII
+                .GetBytes(name)
+                .Concat(Enumerable.Repeat((byte)0, 11))
+                .Take(11)
+                .Concat(Enumerable.Repeat((byte)0, 21))
+                .ToArray();
+
+            data[11] = (byte)type;
+            data[16] = length;
+            data[17] = decimalCount;
+            data[20] = workAreaId;
+            data[31] = productionMdx
+                           ? (byte)1
+                           : (byte)0;
 
             return data;
         }
