@@ -33,11 +33,19 @@ namespace Pilipala.Data.Xbase.Xbase3
         {
             switch ((char)buffer[11])
             {
+                case 'C':
+                    return new CharacterField(buffer);
                 case 'N':
                     return new NumericField(buffer);
+                case 'L':
+                    return new LogicalField(buffer);
+                case 'D':
+                    return new DateField(buffer);
+                case 'F':
+                    return new FloatField(buffer);
             }
 
-            throw new NotImplementedException();
+            throw new InvalidOperationException("Unable to parse the field descriptors, a field with an unknown or unsupported code was encountered.");
         }
     }
 }

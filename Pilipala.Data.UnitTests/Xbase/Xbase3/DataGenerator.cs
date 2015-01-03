@@ -9,18 +9,107 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
     {
         public DataGenerator()
         {
+            var fields = new List<byte[]>
+                         {
+                             CreateFieldDescriptor(IdFieldName, 'N', IdFieldLength), 
+                             CreateFieldDescriptor(TitleFieldName, 'C', TitleFieldLength), 
+                             CreateFieldDescriptor(RatingFieldName, 'F', RatingFieldLength), 
+                             CreateFieldDescriptor(Top250FieldName, 'L', Top250FieldLength), 
+                             CreateFieldDescriptor(ReleasedFieldName, 'D', ReleasedFieldLength)
+                         };
+
             Version = 3;
             LastUpdatedYear = 115;
             LastUpdatedMonth = 10;
             LastUpdatedDay = 21;
             RecordCount = 0;
-            HeaderByteCount = 65;
+            HeaderByteCount = (short)(32 + (fields.Count * 32) + 1);
             RecordLength = 2;
             IncompleteTransactionFlag = 0;
             EncryptionFlag = 0;
             MdxFlag = 0;
             LanguageDriverId = 0;
-            Fields = new List<byte[]> { CreateFieldDescriptor("ID", 'N', 10) };
+            Fields = fields;
+        }
+
+        internal static byte IdFieldLength
+        {
+            get
+            {
+                return 10;
+            }
+        }
+
+        internal static string IdFieldName
+        {
+            get
+            {
+                return "ID";
+            }
+        }
+
+        internal static byte RatingFieldLength
+        {
+            get
+            {
+                return 20;
+            }
+        }
+
+        internal static string RatingFieldName
+        {
+            get
+            {
+                return "Rating";
+            }
+        }
+
+        internal static byte ReleasedFieldLength
+        {
+            get
+            {
+                return 8;
+            }
+        }
+
+        internal static string ReleasedFieldName
+        {
+            get
+            {
+                return "Released";
+            }
+        }
+
+        internal static byte TitleFieldLength
+        {
+            get
+            {
+                return 100;
+            }
+        }
+
+        internal static string TitleFieldName
+        {
+            get
+            {
+                return "Title";
+            }
+        }
+
+        internal static byte Top250FieldLength
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        internal static string Top250FieldName
+        {
+            get
+            {
+                return "Top250";
+            }
         }
 
         internal byte EncryptionFlag { get; set; }

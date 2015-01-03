@@ -42,8 +42,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xbase\IField.cs" />
     <Compile Include="Xbase\IXbaseDataParser.cs" />
+    <Compile Include="Xbase\Xbase3\CharacterField.cs" />
     <Compile Include="Xbase\Xbase3\DataParser.cs" />
+    <Compile Include="Xbase\Xbase3\DateField.cs" />
     <Compile Include="Xbase\Xbase3\Field.cs" />
+    <Compile Include="Xbase\Xbase3\FloatField.cs" />
+    <Compile Include="Xbase\Xbase3\LogicalField.cs" />
     <Compile Include="Xbase\Xbase3\NumericField.cs" />
     <Compile Include="Xbase\XbaseDataReader.cs" />
   </ItemGroup>

@@ -37,9 +37,14 @@ namespace Pilipala.Data.Xbase.Xbase3
 
             var fieldCount = (headerLength - 33) / 32;
             var fields = new List<IField>(fieldCount);
-            data = new byte[32];
-            stream.Read(data, 0, 32);
-            fields.Add(Field.Create(data));
+
+            for (var i = 0; i < fieldCount; i++)
+            {
+                data = new byte[32];
+                stream.Read(data, 0, 32);
+                fields.Add(Field.Create(data));
+            }
+
             Fields = fields;
         }
 
