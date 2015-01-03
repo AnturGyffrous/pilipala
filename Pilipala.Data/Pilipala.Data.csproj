@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\LinqExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xbase\IField.cs" />
     <Compile Include="Xbase\IXbaseDataParser.cs" />

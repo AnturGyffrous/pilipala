@@ -5,7 +5,8 @@
         internal NumericField(byte[] buffer)
             : base(buffer)
         {
-            
+            Type = typeof(string);
+            TypeName = "Character";
         }
     }
 }
