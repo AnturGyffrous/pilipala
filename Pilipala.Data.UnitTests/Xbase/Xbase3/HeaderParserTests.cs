@@ -42,8 +42,8 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             {
                 var parser = DataParser.Create(stream);
                 parser.LastUpdated.Should().Be(new DateTime(2015, 10, 21));
-                parser.RecordsAffected.Should().Be(0);
-                parser.RecordLength.Should().Be(2);
+                parser.RecordsAffected.Should().Be(generator.RecordCount);
+                parser.RecordLength.Should().Be(generator.RecordLength);
                 parser.IncompleteTransaction.Should().Be(expectedIncompleteTransactionFlag);
                 parser.Encrypted.Should().Be(expectedEncryptionFlag);
                 parser.Mdx.Should().Be(expectedMdxFlag);

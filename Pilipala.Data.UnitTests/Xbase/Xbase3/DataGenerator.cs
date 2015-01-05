@@ -24,7 +24,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             LastUpdatedDay = 21;
             RecordCount = 0;
             HeaderByteCount = (short)(32 + (fields.Count * 32) + 1);
-            RecordLength = 2;
+            RecordLength = (short)(fields.Sum(x => x[16]) + 1);
             IncompleteTransactionFlag = 0;
             EncryptionFlag = 0;
             MdxFlag = 0;
