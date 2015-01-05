@@ -11,9 +11,9 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
         {
             var fields = new List<byte[]>
                          {
-                             CreateFieldDescriptor(IdFieldName, 'N', IdFieldLength), 
+                             CreateFieldDescriptor(IdFieldName, 'F', IdFieldLength), 
                              CreateFieldDescriptor(TitleFieldName, 'C', TitleFieldLength), 
-                             CreateFieldDescriptor(RatingFieldName, 'F', RatingFieldLength), 
+                             CreateFieldDescriptor(RatingFieldName, 'N', RatingFieldLength), 
                              CreateFieldDescriptor(Top250FieldName, 'L', Top250FieldLength), 
                              CreateFieldDescriptor(ReleasedFieldName, 'D', ReleasedFieldLength)
                          };
@@ -32,11 +32,19 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             Fields = fields;
         }
 
+        internal static int IdFieldIndex
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         internal static byte IdFieldLength
         {
             get
             {
-                return 10;
+                return 20;
             }
         }
 
@@ -48,11 +56,19 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             }
         }
 
+        internal static int RatingFieldIndex
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
         internal static byte RatingFieldLength
         {
             get
             {
-                return 20;
+                return 3;
             }
         }
 
@@ -61,6 +77,14 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             get
             {
                 return "Rating";
+            }
+        }
+
+        internal static int ReleasedFieldIndex
+        {
+            get
+            {
+                return 4;
             }
         }
 
@@ -80,6 +104,14 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             }
         }
 
+        internal static int TitleFieldIndex
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         internal static byte TitleFieldLength
         {
             get
@@ -93,6 +125,14 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             get
             {
                 return "Title";
+            }
+        }
+
+        internal static int Top250FieldIndex
+        {
+            get
+            {
+                return 3;
             }
         }
 

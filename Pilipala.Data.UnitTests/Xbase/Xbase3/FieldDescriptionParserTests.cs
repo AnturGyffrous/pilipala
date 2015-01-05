@@ -20,7 +20,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = DataParser.Create(stream);
-                var numericField = parser.Fields.ElementAt(1);
+                var numericField = parser.Fields.ElementAt(DataGenerator.TitleFieldIndex);
 
                 numericField.Length.Should().Be(DataGenerator.TitleFieldLength);
                 numericField.Name.Should().Be(DataGenerator.TitleFieldName);
@@ -36,7 +36,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = DataParser.Create(stream);
-                var numericField = parser.Fields.ElementAt(4);
+                var numericField = parser.Fields.ElementAt(DataGenerator.ReleasedFieldIndex);
 
                 numericField.Length.Should().Be(DataGenerator.ReleasedFieldLength);
                 numericField.Name.Should().Be(DataGenerator.ReleasedFieldName);
@@ -52,10 +52,10 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = DataParser.Create(stream);
-                var numericField = parser.Fields.ElementAt(2);
+                var numericField = parser.Fields.ElementAt(DataGenerator.IdFieldIndex);
 
-                numericField.Length.Should().Be(DataGenerator.RatingFieldLength);
-                numericField.Name.Should().Be(DataGenerator.RatingFieldName);
+                numericField.Length.Should().Be(DataGenerator.IdFieldLength);
+                numericField.Name.Should().Be(DataGenerator.IdFieldName);
                 numericField.Type.Should().Be(typeof(double));
                 numericField.TypeName.Should().Be("Float");
             }
@@ -68,7 +68,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = DataParser.Create(stream);
-                var numericField = parser.Fields.ElementAt(3);
+                var numericField = parser.Fields.ElementAt(DataGenerator.Top250FieldIndex);
 
                 numericField.Length.Should().Be(DataGenerator.Top250FieldLength);
                 numericField.Name.Should().Be(DataGenerator.Top250FieldName);
@@ -84,10 +84,10 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 var parser = DataParser.Create(stream);
-                var numericField = parser.Fields.ElementAt(0);
+                var numericField = parser.Fields.ElementAt(DataGenerator.RatingFieldIndex);
 
-                numericField.Length.Should().Be(DataGenerator.IdFieldLength);
-                numericField.Name.Should().Be(DataGenerator.IdFieldName);
+                numericField.Length.Should().Be(DataGenerator.RatingFieldLength);
+                numericField.Name.Should().Be(DataGenerator.RatingFieldName);
                 numericField.Type.Should().Be(typeof(double));
                 numericField.TypeName.Should().Be("Numeric");
             }
@@ -110,7 +110,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
         public void WillGetAnErrorIfDateFieldHasLengthOtherThan8(int fieldLength)
         {
             var generator = new DataGenerator();
-            generator.Fields.ElementAt(4)[16] = (byte)fieldLength;
+            generator.Fields.ElementAt(DataGenerator.ReleasedFieldIndex)[16] = (byte)fieldLength;
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
@@ -134,7 +134,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
         public void WillGetAnErrorIfFloatFieldHasLengthOtherThan20(int fieldLength)
         {
             var generator = new DataGenerator();
-            generator.Fields.ElementAt(2)[16] = (byte)fieldLength;
+            generator.Fields.ElementAt(DataGenerator.IdFieldIndex)[16] = (byte)fieldLength;
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
@@ -145,7 +145,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
         public void WillGetAnErrorIfLogicalFieldHasLengthGreaterThan1()
         {
             var generator = new DataGenerator();
-            generator.Fields.ElementAt(3)[16] = 2;
+            generator.Fields.ElementAt(DataGenerator.Top250FieldIndex)[16] = 2;
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
@@ -156,7 +156,7 @@ namespace Pilipala.Data.UnitTests.Xbase.Xbase3
         public void WillGetAnErrorIfNumericFieldHasLengthGreaterThan20()
         {
             var generator = new DataGenerator();
-            generator.Fields.ElementAt(0)[16] = 25;
+            generator.Fields.ElementAt(DataGenerator.RatingFieldIndex)[16] = 25;
             using (var stream = new MemoryStream(generator.GetData()))
             {
                 Assert.Throws<InvalidOperationException>(() => DataParser.Create(stream));
