@@ -18,6 +18,9 @@ namespace Pilipala.Data.UnitTests.Xbase
 {
     public class XbaseDataReaderTests
     {
+        private const string _noDataHasBeenReadExceptionMessage =
+            "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.";
+
         [Theory]
         [AutoNSubstituteData]
         public void CloseShouldBeCalledWhenDisposing([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
@@ -27,6 +30,41 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             // Assert
             parser.Received().Close();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void DepthShouldBeZeroAfterRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Act
+            reader.Read();
+
+            // Assert
+            reader.Depth.Should().Be(0);
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public async void DepthShouldBeZeroAfterReadAsync([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Act
+            await reader.ReadAsync();
+
+            // Assert
+            reader.Depth.Should().Be(0);
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void DepthShouldThrowInvalidOperationExceptionIfNoDataHasBeenRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Act
+            Action depth = () => reader.Depth.IgnoreUnusedVariable();
+
+            // Assert
+            depth
+                .ShouldThrow<InvalidOperationException>()
+                .WithMessage(_noDataHasBeenReadExceptionMessage);
         }
 
         [Theory]
@@ -183,13 +221,13 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void RecordsAffectedShouldThrowInvalidOperationExceptionIfNoDataHasBeenRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
-            // Arrange
+            // Act
             Action recordsAffected = () => reader.RecordsAffected.IgnoreUnusedVariable();
 
-            // Act
+            // Assert
             recordsAffected
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage("No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.");
+                .WithMessage(_noDataHasBeenReadExceptionMessage);
         }
 
         [Fact]

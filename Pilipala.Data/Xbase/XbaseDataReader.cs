@@ -9,6 +9,9 @@ namespace Pilipala.Data.Xbase
 {
     public class XbaseDataReader : DbDataReader
     {
+        private const string _noDataHasBeenRead =
+            "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.";
+
         private readonly IXbaseDataParser _parser;
 
         private bool _isBof = true;
@@ -24,7 +27,12 @@ namespace Pilipala.Data.Xbase
         {
             get
             {
-                throw new NotImplementedException();
+                if (_isBof)
+                {
+                    throw new InvalidOperationException(_noDataHasBeenRead);
+                }
+
+                return 0;
             }
         }
 
@@ -63,8 +71,7 @@ namespace Pilipala.Data.Xbase
 
                 if (_isBof)
                 {
-                    throw new InvalidOperationException(
-                        "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.");
+                    throw new InvalidOperationException(_noDataHasBeenRead);
                 }
 
                 return _parser.RecordsAffected;
