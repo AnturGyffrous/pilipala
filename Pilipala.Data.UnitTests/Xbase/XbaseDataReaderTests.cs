@@ -22,7 +22,10 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void CloseShouldBeCalledWhenDisposing([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Act
             reader.Dispose();
+
+            // Assert
             parser.Received().Close();
         }
 
@@ -30,6 +33,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void IsClosedShouldBeFalseBeforeReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Assert
             reader.IsClosed.Should().BeFalse();
         }
 
@@ -37,7 +41,10 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void IsClosedShouldBeTrueAfterReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Act
             reader.Close();
+
+            // Assert
             reader.IsClosed.Should().BeTrue();
         }
 
@@ -45,7 +52,10 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void NextResultAsyncShouldThrowNotImplementedException([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Act
             Func<Task<bool>> nextResultAsync = reader.NextResultAsync;
+
+            // Assert
             nextResultAsync.ShouldThrow<NotImplementedException>();
         }
 
@@ -53,7 +63,10 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void NextResultShouldThrowNotImplementedException([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Act
             Action nextResult = () => reader.NextResult();
+
+            // Assert
             nextResult.ShouldThrow<NotImplementedException>();
         }
 
@@ -61,10 +74,18 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public async void ReadAsyncShouldReturnFalseWhenThereAreNoMoreRecordsToRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Arrange
             parser.ReadAsync().Returns(Task.FromResult(true), Task.FromResult(true), Task.FromResult(false));
-            (await reader.ReadAsync()).Should().BeTrue();
-            (await reader.ReadAsync()).Should().BeTrue();
-            (await reader.ReadAsync()).Should().BeFalse();
+
+            // Act
+            var firstRead = await reader.ReadAsync();
+            var secondRead = await reader.ReadAsync();
+            var thirdRead = await reader.ReadAsync();
+
+            // Assert
+            firstRead.Should().BeTrue();
+            secondRead.Should().BeTrue();
+            thirdRead.Should().BeFalse();
             parser.Received(3).ReadAsync().IgnoreAwaitWarning();
         }
 
@@ -72,8 +93,14 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public async void ReadAsyncShouldReturnTrueIfThereAreRecordsInTheDatabase([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Arrange
             parser.ReadAsync().Returns(Task.FromResult(true));
-            (await reader.ReadAsync()).Should().BeTrue();
+
+            // Act
+            var result = await reader.ReadAsync();
+
+            // Assert
+            result.Should().BeTrue();
             parser.Received().ReadAsync().IgnoreAwaitWarning();
         }
 
@@ -81,10 +108,18 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void ReadShouldReturnFalseWhenThereAreNoMoreRecordsToRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Arrange
             parser.Read().Returns(true, true, false);
-            reader.Read().Should().BeTrue();
-            reader.Read().Should().BeTrue();
-            reader.Read().Should().BeFalse();
+
+            // Act
+            var firstRead = reader.Read();
+            var secondRead = reader.Read();
+            var thirdRead = reader.Read();
+
+            // Assert
+            firstRead.Should().BeTrue();
+            secondRead.Should().BeTrue();
+            thirdRead.Should().BeFalse();
             parser.Received(3).Read();
         }
 
@@ -92,8 +127,14 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void ReadShouldReturnTrueIfThereAreRecordsInTheDatabase([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Arrange
             parser.Read().Returns(true);
-            reader.Read().Should().BeTrue();
+
+            // Act
+            var result = reader.Read();
+
+            // Assert
+            result.Should().BeTrue();
             parser.Received().Read();
         }
 
@@ -101,7 +142,10 @@ namespace Pilipala.Data.UnitTests.Xbase
         [AutoNSubstituteData]
         public void RecordsAffectedShouldBeZeroAfterReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
+            // Act
             reader.Close();
+
+            // Assert
             reader.RecordsAffected.Should().Be(0);
         }
 
