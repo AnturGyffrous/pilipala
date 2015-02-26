@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="AutoFixture\AutoNSubstituteDataAttribute.cs" />
     <Compile Include="AutoFixture\InlineAutoNSubstituteDataAttribute.cs" />
-    <Compile Include="Extensions\AsyncExtensions.cs" />
+    <Compile Include="Extensions\NSubstituteExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,8 @@ namespace Pilipala.Data.Xbase
     {
         private readonly IXbaseDataParser _parser;
 
+        private bool _isBof = true;
+
         private bool _isClosed;
 
         public XbaseDataReader(IXbaseDataParser parser)
@@ -59,7 +61,13 @@ namespace Pilipala.Data.Xbase
                     return 0;
                 }
 
-                throw new NotImplementedException();
+                if (_isBof)
+                {
+                    throw new InvalidOperationException(
+                        "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.");
+                }
+
+                return _parser.RecordsAffected;
             }
         }
 
@@ -207,11 +215,13 @@ namespace Pilipala.Data.Xbase
 
         public override bool Read()
         {
+            _isBof = false;
             return _parser.Read();
         }
 
         public override Task<bool> ReadAsync(CancellationToken cancellationToken)
         {
+            _isBof = false;
             return _parser.ReadAsync();
         }
     }

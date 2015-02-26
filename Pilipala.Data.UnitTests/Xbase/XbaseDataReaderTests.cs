@@ -149,6 +149,49 @@ namespace Pilipala.Data.UnitTests.Xbase
             reader.RecordsAffected.Should().Be(0);
         }
 
+        [Theory]
+        [AutoNSubstituteData]
+        public void RecordsAffectedShouldReturnRecordCountAfterRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Arrange
+            parser.RecordsAffected.Returns(3);
+
+            // Act
+            reader.Read();
+
+            // Assert
+            reader.RecordsAffected.Should().Be(3);
+            parser.Received().RecordsAffected.IgnoreUnusedVariable();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public async void RecordsAffectedShouldReturnRecordCountAfterReadAsync([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Arrange
+            parser.RecordsAffected.Returns(3);
+
+            // Act
+            await reader.ReadAsync();
+
+            // Assert
+            reader.RecordsAffected.Should().Be(3);
+            parser.Received().RecordsAffected.IgnoreUnusedVariable();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void RecordsAffectedShouldThrowInvalidOperationExceptionIfNoDataHasBeenRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            // Arrange
+            Action recordsAffected = () => reader.RecordsAffected.IgnoreUnusedVariable();
+
+            // Act
+            recordsAffected
+                .ShouldThrow<InvalidOperationException>()
+                .WithMessage("No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.");
+        }
+
         [Fact]
         public void DummyFactToForceNCrunchToRun()
         {

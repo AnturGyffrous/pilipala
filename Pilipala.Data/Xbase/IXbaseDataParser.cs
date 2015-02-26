@@ -9,5 +9,7 @@ namespace Pilipala.Data.Xbase
         bool Read();
 
         Task<bool> ReadAsync();
+
+        int RecordsAffected { get; }
     }
 }
