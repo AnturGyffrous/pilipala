@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using FluentAssertions;
 
@@ -38,6 +39,22 @@ namespace Pilipala.Data.UnitTests.Xbase
         {
             reader.Close();
             reader.IsClosed.Should().BeTrue();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void NextResultAsyncShouldThrowNotImplementedException([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            Func<Task<bool>> nextResultAsync = reader.NextResultAsync;
+            nextResultAsync.ShouldThrow<NotImplementedException>();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void NextResultShouldThrowNotImplementedException([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            Action nextResult = () => reader.NextResult();
+            nextResult.ShouldThrow<NotImplementedException>();
         }
 
         [Theory]
