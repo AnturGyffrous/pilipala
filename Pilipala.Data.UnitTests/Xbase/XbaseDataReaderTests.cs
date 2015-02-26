@@ -1,9 +1,12 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+
+using FluentAssertions;
 
 using NSubstitute;
 
 using Pilipala.Data.Xbase;
 using Pilipala.Tests.AutoFixture;
+using Pilipala.Tests.Extensions;
 
 using Ploeh.AutoFixture.Xunit;
 
@@ -24,10 +27,57 @@ namespace Pilipala.Data.UnitTests.Xbase
 
         [Theory]
         [AutoNSubstituteData]
+        public void IsClosedShouldBeFalseBeforeReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            reader.IsClosed.Should().BeFalse();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
         public void IsClosedShouldBeTrueAfterReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
             reader.Close();
             reader.IsClosed.Should().BeTrue();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public async void ReadAsyncShouldReturnFalseWhenThereAreNoMoreRecordsToRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            parser.ReadAsync().Returns(Task.FromResult(true), Task.FromResult(true), Task.FromResult(false));
+            (await reader.ReadAsync()).Should().BeTrue();
+            (await reader.ReadAsync()).Should().BeTrue();
+            (await reader.ReadAsync()).Should().BeFalse();
+            parser.Received(3).ReadAsync().IgnoreAwaitWarning();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public async void ReadAsyncShouldReturnTrueIfThereAreRecordsInTheDatabase([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            parser.ReadAsync().Returns(Task.FromResult(true));
+            (await reader.ReadAsync()).Should().BeTrue();
+            parser.Received().ReadAsync().IgnoreAwaitWarning();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void ReadShouldReturnFalseWhenThereAreNoMoreRecordsToRead([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            parser.Read().Returns(true, true, false);
+            reader.Read().Should().BeTrue();
+            reader.Read().Should().BeTrue();
+            reader.Read().Should().BeFalse();
+            parser.Received(3).Read();
+        }
+
+        [Theory]
+        [AutoNSubstituteData]
+        public void ReadShouldReturnTrueIfThereAreRecordsInTheDatabase([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
+        {
+            parser.Read().Returns(true);
+            reader.Read().Should().BeTrue();
+            parser.Received().Read();
         }
 
         [Theory]

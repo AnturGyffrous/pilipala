@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pilipala.Data.Xbase
 {
@@ -205,7 +207,12 @@ namespace Pilipala.Data.Xbase
 
         public override bool Read()
         {
-            throw new NotImplementedException();
+            return _parser.Read();
+        }
+
+        public override Task<bool> ReadAsync(CancellationToken cancellationToken)
+        {
+            return _parser.ReadAsync();
         }
     }
 }
