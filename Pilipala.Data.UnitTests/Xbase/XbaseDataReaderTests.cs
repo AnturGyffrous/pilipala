@@ -1,42 +1,47 @@
-﻿using System.Data.Common;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using NSubstitute;
 
 using Pilipala.Data.Xbase;
+using Pilipala.Tests.AutoFixture;
+
+using Ploeh.AutoFixture.Xunit;
 
 using Xunit;
+using Xunit.Extensions;
 
 namespace Pilipala.Data.UnitTests.Xbase
 {
     public class XbaseDataReaderTests
     {
-        [Fact]
-        public void CloseShouldBeCalledWhenDisposing()
+        [Theory]
+        [AutoNSubstituteData]
+        public void CloseShouldBeCalledWhenDisposing([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
-            var parser = Substitute.For<IXbaseDataParser>();
-            DbDataReader reader = new XbaseDataReader(parser);
             reader.Dispose();
             parser.Received().Close();
         }
 
-        [Fact]
-        public void IsClosedShouldBeTrueAfterReaderIsClosed()
+        [Theory]
+        [AutoNSubstituteData]
+        public void IsClosedShouldBeTrueAfterReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
-            var parser = Substitute.For<IXbaseDataParser>();
-            DbDataReader reader = new XbaseDataReader(parser);
             reader.Close();
             reader.IsClosed.Should().BeTrue();
         }
 
-        [Fact]
-        public void RecordsAffectedShouldBeZeroAfterReaderIsClosed()
+        [Theory]
+        [AutoNSubstituteData]
+        public void RecordsAffectedShouldBeZeroAfterReaderIsClosed([Frozen] IXbaseDataParser parser, XbaseDataReader reader)
         {
-            var parser = Substitute.For<IXbaseDataParser>();
-            DbDataReader reader = new XbaseDataReader(parser);
             reader.Close();
             reader.RecordsAffected.Should().Be(0);
+        }
+
+        [Fact]
+        public void DummyFactToForceNCrunchToRun()
+        {
+            // See http://forum.ncrunch.net/yaf_postst358_Doesnt-run--Theory--tests.aspx for details
         }
     }
 }

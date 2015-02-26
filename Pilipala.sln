@@ -9,6 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilipala.Data", "Pilipala.Data\Pilipala.Data.csproj", "{7F9BAF5D-EA0F-4084-96E9-D147D5CF310F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{39BD58C8-7FC1-475D-9CF7-86E3A13BD77E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilipala.Tests", "Pilipala.Tests\Pilipala.Tests.csproj", "{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +27,17 @@ Global
 		{7F9BAF5D-EA0F-4084-96E9-D147D5CF310F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F9BAF5D-EA0F-4084-96E9-D147D5CF310F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F9BAF5D-EA0F-4084-96E9-D147D5CF310F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C00046B-0A22-438F-AFEA-499620D90D0A} = {23C006F9-61C8-4FF2-8E87-A907DB06D727}
+		{23C006F9-61C8-4FF2-8E87-A907DB06D727} = {39BD58C8-7FC1-475D-9CF7-86E3A13BD77E}
+		{A8B9AD2E-023A-4615-B9DE-8EF88142EE64} = {39BD58C8-7FC1-475D-9CF7-86E3A13BD77E}
 	EndGlobalSection
 EndGlobal
