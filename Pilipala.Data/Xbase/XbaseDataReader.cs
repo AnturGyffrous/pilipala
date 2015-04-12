@@ -27,10 +27,7 @@ namespace Pilipala.Data.Xbase
         {
             get
             {
-                if (_isBof)
-                {
-                    throw new InvalidOperationException(_noDataHasBeenRead);
-                }
+                ThrowIfBof();
 
                 return 0;
             }
@@ -69,10 +66,7 @@ namespace Pilipala.Data.Xbase
                     return 0;
                 }
 
-                if (_isBof)
-                {
-                    throw new InvalidOperationException(_noDataHasBeenRead);
-                }
+                ThrowIfBof();
 
                 return _parser.RecordsAffected;
             }
@@ -230,6 +224,14 @@ namespace Pilipala.Data.Xbase
         {
             _isBof = false;
             return _parser.ReadAsync();
+        }
+
+        private void ThrowIfBof()
+        {
+            if (_isBof)
+            {
+                throw new InvalidOperationException(_noDataHasBeenRead);
+            }
         }
     }
 }
