@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using FluentAssertions;
 
@@ -15,31 +14,17 @@ using Xunit;
 
 namespace Pilipala.Data.UnitTests.Xbase
 {
-    public class XbaseDatareaderTests
+    public class XbaseDataReaderTests
     {
         private const string _noDataHasBeenReadExceptionMessage =
             "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.";
 
         private readonly IFixture _fixture;
 
-        public XbaseDatareaderTests()
+        public XbaseDataReaderTests()
         {
             _fixture = new Fixture().Customize(new AutoNSubstituteCustomization());
             _fixture.Freeze<IXbaseDataParser>();
-        }
-
-        [Fact]
-        public void CloseShouldBeCalledWhenDisposing()
-        {
-            // Arrange
-            var parser = _fixture.Create<IXbaseDataParser>();
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Act
-            reader.Dispose();
-
-            // Assert
-            parser.Received().Close();
         }
 
         [Fact]
@@ -50,19 +35,6 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             // Act
             reader.Read();
-
-            // Assert
-            reader.Depth.Should().Be(0);
-        }
-
-        [Fact]
-        public async void DepthShouldBeZeroAfterReadAsync()
-        {
-            // Arrange
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Act
-            await reader.ReadAsync();
 
             // Assert
             reader.Depth.Should().Be(0);
@@ -84,42 +56,6 @@ namespace Pilipala.Data.UnitTests.Xbase
         }
 
         [Fact]
-        public void IsClosedShouldBeFalseBeforereaderIsClosed()
-        {
-            // Arrange
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Assert
-            reader.IsClosed.Should().BeFalse();
-        }
-
-        [Fact]
-        public void IsClosedShouldBeTrueAfterreaderIsClosed()
-        {
-            // Arrange
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Act
-            reader.Close();
-
-            // Assert
-            reader.IsClosed.Should().BeTrue();
-        }
-
-        [Fact]
-        public void NextResultAsyncShouldThrowNotImplementedException()
-        {
-            // Arrange
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Act
-            Func<Task<bool>> nextResultAsync = reader.NextResultAsync;
-
-            // Assert
-            nextResultAsync.ShouldThrow<NotImplementedException>();
-        }
-
-        [Fact]
         public void NextResultShouldThrowNotImplementedException()
         {
             // Arrange
@@ -130,46 +66,6 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             // Assert
             nextResult.ShouldThrow<NotImplementedException>();
-        }
-
-        [Fact]
-        public async void ReadAsyncShouldReturnFalseWhenThereAreNoMoreRecordsToRead()
-        {
-            // Arrange
-            var parser = _fixture.Create<IXbaseDataParser>();
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Arrange
-            parser.ReadAsync().Returns(Task.FromResult(true), Task.FromResult(true), Task.FromResult(false));
-
-            // Act
-            var firstRead = await reader.ReadAsync();
-            var secondRead = await reader.ReadAsync();
-            var thirdRead = await reader.ReadAsync();
-
-            // Assert
-            firstRead.Should().BeTrue();
-            secondRead.Should().BeTrue();
-            thirdRead.Should().BeFalse();
-            parser.Received(3).ReadAsync().IgnoreAwaitWarning();
-        }
-
-        [Fact]
-        public async void ReadAsyncShouldReturnTrueIfThereAreRecordsInTheDatabase()
-        {
-            // Arrange
-            var parser = _fixture.Create<IXbaseDataParser>();
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Arrange
-            parser.ReadAsync().Returns(Task.FromResult(true));
-
-            // Act
-            var result = await reader.ReadAsync();
-
-            // Assert
-            result.Should().BeTrue();
-            parser.Received().ReadAsync().IgnoreAwaitWarning();
         }
 
         [Fact]
@@ -213,7 +109,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         }
 
         [Fact]
-        public void RecordsAffectedShouldBeZeroAfterreaderIsClosed()
+        public void RecordsAffectedShouldBeZeroAfterReaderIsClosed()
         {
             // Arrange
             var reader = _fixture.Create<XbaseDataReader>();
@@ -237,24 +133,6 @@ namespace Pilipala.Data.UnitTests.Xbase
 
             // Act
             reader.Read();
-
-            // Assert
-            reader.RecordsAffected.Should().Be(3);
-            parser.Received().RecordsAffected.IgnoreUnusedVariable();
-        }
-
-        [Fact]
-        public async void RecordsAffectedShouldReturnRecordCountAfterReadAsync()
-        {
-            // Arrange
-            var parser = _fixture.Create<IXbaseDataParser>();
-            var reader = _fixture.Create<XbaseDataReader>();
-
-            // Arrange
-            parser.RecordsAffected.Returns(3);
-
-            // Act
-            await reader.ReadAsync();
 
             // Assert
             reader.RecordsAffected.Should().Be(3);
