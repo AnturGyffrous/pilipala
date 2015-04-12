@@ -48,7 +48,7 @@ namespace Pilipala.Data.Xbase
         {
             get
             {
-                throw new NotImplementedException();
+                return RecordsAffected > 0;
             }
         }
 

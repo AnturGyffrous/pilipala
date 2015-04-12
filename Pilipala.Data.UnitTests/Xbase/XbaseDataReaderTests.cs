@@ -56,6 +56,50 @@ namespace Pilipala.Data.UnitTests.Xbase
         }
 
         [Fact]
+        public void HasRowsShouldReturnFalseIfNoRecordsExistInRecordset()
+        {
+            // Arrange
+            var reader = _fixture.Create<XbaseDataReader>();
+
+            // Act
+            reader.Read();
+
+            // Assert
+            reader.HasRows.Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasRowsShouldReturnTrueIfRecordsExistInRecordset()
+        {
+            // Arrange
+            var parser = _fixture.Create<IXbaseDataParser>();
+            var reader = _fixture.Create<XbaseDataReader>();
+
+            parser.RecordsAffected.Returns(3);
+
+            // Act
+            reader.Read();
+
+            // Assert
+            reader.HasRows.Should().BeTrue();
+        }
+
+        [Fact]
+        public void HasRowsShouldThrowInvalidOperationExceptionIfNoDataHasBeenRead()
+        {
+            // Arrange
+            var reader = _fixture.Create<XbaseDataReader>();
+
+            // Act
+            Action depth = () => reader.HasRows.IgnoreUnusedVariable();
+
+            // Assert
+            depth
+                .ShouldThrow<InvalidOperationException>()
+                .WithMessage(_noDataHasBeenReadExceptionMessage);
+        }
+
+        [Fact]
         public void NextResultShouldThrowNotImplementedException()
         {
             // Arrange
