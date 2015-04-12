@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,7 +38,9 @@ namespace Pilipala.Data.Xbase
         {
             get
             {
-                throw new NotImplementedException();
+                ThrowIfBof();
+
+                return _parser.Fields.Count();
             }
         }
 

@@ -70,7 +70,13 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Xbase\XbaseDataReaderAsyncTests.cs" />
+    <Compile Include="Xbase\XbaseDataReaderFieldTests.cs" />
     <Compile Include="Xbase\XbaseDataReaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xbase\XbaseDataReaderLifetimeTests.cs" />
@@ -88,6 +94,12 @@
       <Project>{A8B9AD2E-023A-4615-B9DE-8EF88142EE64}</Project>
       <Name>Pilipala.Tests</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

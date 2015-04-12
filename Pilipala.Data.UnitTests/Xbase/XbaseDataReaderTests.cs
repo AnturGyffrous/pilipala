@@ -4,6 +4,7 @@ using FluentAssertions;
 
 using NSubstitute;
 
+using Pilipala.Data.UnitTests.Properties;
 using Pilipala.Data.Xbase;
 using Pilipala.Tests.Extensions;
 
@@ -16,9 +17,6 @@ namespace Pilipala.Data.UnitTests.Xbase
 {
     public class XbaseDataReaderTests
     {
-        private const string _noDataHasBeenReadExceptionMessage =
-            "No data has been read. You must advance the cursor past the beginning of the file by calling Read() or ReadAsync() before inspecting the data.";
-
         private readonly IFixture _fixture;
 
         public XbaseDataReaderTests()
@@ -52,7 +50,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             // Assert
             depth
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage(_noDataHasBeenReadExceptionMessage);
+                .WithMessage(Resources.NoDataHasBeenReadExceptionMessage);
         }
 
         [Fact]
@@ -96,7 +94,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             // Assert
             depth
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage(_noDataHasBeenReadExceptionMessage);
+                .WithMessage(Resources.NoDataHasBeenReadExceptionMessage);
         }
 
         [Fact]
@@ -119,7 +117,6 @@ namespace Pilipala.Data.UnitTests.Xbase
             var parser = _fixture.Create<IXbaseDataParser>();
             var reader = _fixture.Create<XbaseDataReader>();
 
-            // Arrange
             parser.Read().Returns(true, true, false);
 
             // Act
@@ -141,7 +138,6 @@ namespace Pilipala.Data.UnitTests.Xbase
             var parser = _fixture.Create<IXbaseDataParser>();
             var reader = _fixture.Create<XbaseDataReader>();
 
-            // Arrange
             parser.Read().Returns(true);
 
             // Act
@@ -172,7 +168,6 @@ namespace Pilipala.Data.UnitTests.Xbase
             var parser = _fixture.Create<IXbaseDataParser>();
             var reader = _fixture.Create<XbaseDataReader>();
 
-            // Arrange
             parser.RecordsAffected.Returns(3);
 
             // Act
@@ -195,7 +190,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             // Assert
             recordsAffected
                 .ShouldThrow<InvalidOperationException>()
-                .WithMessage(_noDataHasBeenReadExceptionMessage);
+                .WithMessage(Resources.NoDataHasBeenReadExceptionMessage);
         }
     }
 }

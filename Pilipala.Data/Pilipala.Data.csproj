@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xbase\IField.cs" />
     <Compile Include="Xbase\IXbaseDataParser.cs" />
     <Compile Include="Xbase\XbaseDataReader.cs" />
   </ItemGroup>
