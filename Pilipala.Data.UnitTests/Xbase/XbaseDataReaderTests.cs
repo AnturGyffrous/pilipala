@@ -98,7 +98,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         }
 
         [Fact]
-        public void NextResultShouldThrowNotImplementedException()
+        public void NextResultShouldThrowNotSupportedException()
         {
             // Arrange
             var reader = _fixture.Create<XbaseDataReader>();
@@ -107,7 +107,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             Action nextResult = () => reader.NextResult();
 
             // Assert
-            nextResult.ShouldThrow<NotImplementedException>();
+            nextResult.ShouldThrow<NotSupportedException>();
         }
 
         [Fact]

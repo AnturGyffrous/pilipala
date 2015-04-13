@@ -39,7 +39,7 @@ namespace Pilipala.Data.UnitTests.Xbase
         }
 
         [Fact]
-        public void NextResultAsyncShouldThrowNotImplementedException()
+        public void NextResultAsyncShouldThrowNotSupportedException()
         {
             // Arrange
             var reader = _fixture.Create<XbaseDataReader>();
@@ -48,7 +48,7 @@ namespace Pilipala.Data.UnitTests.Xbase
             Func<Task<bool>> nextResultAsync = reader.NextResultAsync;
 
             // Assert
-            nextResultAsync.ShouldThrow<NotImplementedException>();
+            nextResultAsync.ShouldThrow<NotSupportedException>();
         }
 
         [Fact]

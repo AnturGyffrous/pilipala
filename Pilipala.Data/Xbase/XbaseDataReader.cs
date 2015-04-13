@@ -214,7 +214,7 @@ namespace Pilipala.Data.Xbase
 
         public override bool NextResult()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override bool Read()
